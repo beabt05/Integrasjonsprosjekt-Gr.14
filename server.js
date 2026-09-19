@@ -55,7 +55,7 @@ const server = http.createServer((req, res) => {
       break
   }
 
-  // Read file
+  // Use Node's file system module to read the file located at filePath.
 
   fs.readFile(filePath, (err, content) => {
     if (err) {

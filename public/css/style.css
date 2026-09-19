@@ -1,6 +1,6 @@
 body {
     font-family:Arial, Helvetica, sans-serif;
-    background: aquamarine;
+    background: rgb(189, 209, 202);
     color: black;
 }
 
@@ -15,3 +15,13 @@ body {
     width: 30%;
     font-family: 'Courier New', Courier, monospace;
  }
+
+ #node {
+    float: right;
+    width: 5%;
+}
+
+#node2 {
+    float: right;
+    width: 8%;
+}
