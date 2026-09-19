@@ -4,6 +4,15 @@ body {
     color: black;
 }
 
+h1 {
+    font-family: Lobster;
+    font-size: 64px;
+    font-weight: 600;
+    color:gray;
+    width: 30%;
+}
+
+
 #express {
     float: right;
     width: 5%;
