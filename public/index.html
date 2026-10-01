@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+<meta charset="UTF-8">
 
 <head>
     <title>Form</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
+
 </head>
+
+
+
+
 
 <form id="userForm">
     <label>
-        Name
+        Navn
         <input type="text" id="name" required>
     </label>
 
@@ -20,12 +26,15 @@
     <label>
         Role
         <select id="role">
-            <option value="Member">Member</option>
-            <option value="Host">Host</option>
+            <option value="Member">Medlem</option>
+            <option value="Host">Vert</option>
+            <!--<option value="Member">Member</option>-->
+            <!--<option value="Host">Host</option>-->
         </select>
     </label>
 
-    <button type="submit">Make User</button>
+    <button type="submit">Lage Bruker</button>
+    <!--<button type="submit">Make User</button>-->
 
 
 </form>
@@ -33,14 +42,72 @@
 
 
 
-    <h3>Study Buddy</h3>
-    <h3>Welcome to the homepage</h3>
+    <h1>Study Buddy</h1>
+    <h3>Velkommen til landingssiden</h3>
+    <!--<h3>Welcome to the landing page</h3>-->
     <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
     <img id="node" src="images/node-icon.png" alt="JS icon">
-    <p class="para">This site is built entirely on Node.js and Node.js backend.
+    <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
+        Node er en JavaScript-plattform som vanligvis brukes til å kjøre JavaScript på servere.<p>
+    <!--<p class="para">This site is built entirely on Node.js and Node.js backend.
         Node is a JavaScript platform typically used to run JavaScript on servers.<p>
+        --><body>
+<li class="nav-login">
+  <form class="nav-login-form" id="navAuthForm">
+    <input type="email" name="email" placeholder="Email"
+           required autocomplete="email">
+
+    <input type="password" name="password" id="navPassword"
+           placeholder="Passord" required autocomplete="current-password">
+
+    <button type="submit" id="navAuthBtn">Login</button>
+  </form>
+
+  <div class="nav-login-toggle">
+    <button type="button" id="navToRegister">Ikke registrert enna?</button>
+    <button type="button" id="navToLogin" hidden>Allerede registrert?</button>
+  </div>
+
+  <p id="navAuthMessage" role="status"></p>
+</li>
+
+<div class="container">  
+  <form id="contact" action="" method="post">
+    <h3>Study Buddy</h3>
+    <h4>Arranger en studieøkt</h4>
+    <fieldset>
+      <input placeholder="Vertsnavn" type="text" tabindex="1" required autofocus>
+    </fieldset>
+    <fieldset>
+      <input placeholder="E-postadresse" type="email" tabindex="2" required>
+    </fieldset>
+       <fieldset>
+      <input placeholder="date" type="date" tabindex="2" required>
+    </fieldset>
+<fieldset>
+    <select name="course-code" multiple = "multiple">
+        <option value="" disabled selected>Emne kode og kurs navn</option>
+        <option value="IDG2052">IDG2052 Programmering</option>
+        <option value="IDATG2208">IDATG2208 Machine Learning</option>
+        <option value="IDATG2102">IDATG2102 Alogrithmic Methods</option>
+       
+    </select>
+</fieldset>
+    <fieldset>
+                 <textarea placeholder="Skriv gruppesesjonsbeskrivelsen her..." tabindex="5" required></textarea>
+    </fieldset>
+    <fieldset>
+      <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
+    </fieldset>
+  </form>
+ 
+  
+</div>
+
+  
 
 </body>
 <script src="js/app.js"></script>
+<script src="js/script.js"></script>
 
 </html>
