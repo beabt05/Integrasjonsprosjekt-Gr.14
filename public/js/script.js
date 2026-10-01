@@ -38,7 +38,7 @@ const authForm = document.querySelector('#navAuthForm');
 const submitButton = document.querySelector('#navAuthBtn');
 const toRegister = document.querySelector('#navToRegister');
 const toLogin = document.querySelector('#navToLogin');
-const message = document.querySelector('#navAuthMessage');
+const navMessage = document.querySelector('#navAuthMessage');
 
 let mode = 'login';
 
@@ -47,7 +47,7 @@ toRegister.addEventListener('click', () => {
   submitButton.textContent = 'Registrer deg';
   toRegister.hidden = true;
   toLogin.hidden = false;
-  message.textContent = '';
+  navMessage.textContent = '';
 });
 
 toLogin.addEventListener('click', () => {
@@ -55,7 +55,7 @@ toLogin.addEventListener('click', () => {
   submitButton.textContent = 'Login';
   toLogin.hidden = true;
   toRegister.hidden = false;
-  message.textContent = '';
+  navMessage.textContent = '';
 });
 
 authForm.addEventListener('submit', async (event) => {
@@ -71,12 +71,12 @@ authForm.addEventListener('submit', async (event) => {
     });
 
     const result = await response.json();
-    message.textContent = result.message;
+    navMessage.textContent = result.message;
 
     if (response.ok && mode === 'login') {
       window.location.href = '/index.html';
     }
   } catch {
-    message.textContent = 'Kunne ikke koble opp til serveren.';
+    navMessage.textContent = 'Kunne ikke koble opp til serveren.';
   } 
 });
