@@ -34,7 +34,7 @@ const courses = [
   }
 ];
 
-const form = document.querySelector('#navAuthForm');
+const authForm = document.querySelector('#navAuthForm');
 const submitButton = document.querySelector('#navAuthBtn');
 const toRegister = document.querySelector('#navToRegister');
 const toLogin = document.querySelector('#navToLogin');
@@ -58,10 +58,10 @@ toLogin.addEventListener('click', () => {
   message.textContent = '';
 });
 
-form.addEventListener('submit', async (event) => {
+authForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  const { email, password } = Object.fromEntries(new FormData(form));
+  const { email, password } = Object.fromEntries(new FormData(authForm));
 
   try {
     const response = await fetch(`/api/auth/${mode}`, {
