@@ -14,8 +14,11 @@
 <br>
 <li class="nav-login">
   <form class="nav-login-form" id="navAuthForm">
-    <input type="email" name="email" placeholder="Email"
-           required autocomplete="email">
+    <input type="text" name="username" id="navUsername"
+       placeholder="Brukernavn" autocomplete="username"
+       minlength="2" maxlength="50" hidden disabled>
+    <!--<input type="email" name="email" placeholder="Email"
+       required autocomplete="email">-->
 
     <input type="password" name="password" id="navPassword"
            placeholder="Passord" required autocomplete="current-password">
@@ -100,8 +103,7 @@
 
 </form>
 <p id="message"></p>
--->
- -->
+
       <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
     <img id="node" src="images/node-icon.png" alt="JS icon">
     <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 

@@ -6,8 +6,51 @@ const db = require('./db')
 
 
 
-const server = http.createServer((req, res) => {
-  //Build file path
+const server = http.createServer((req, res) => {   
+  if (req.method == 'POST' && req.url === '/api/auth/register'){   //checks that the form reaches the route
+    let body = '';
+
+    req.on('data', chunk => {
+
+      body += chunk;
+    });
+
+    req.on('end', () => {
+      try {
+        const {username, password} = JSON.parse(body);
+
+        if (
+          typeof username !== 'string' ||
+          typeof password !== 'string' ||
+          !username.trim() ||
+          !password
+        ) {
+          res.writeHead(400, {'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            message: 'Skriv inn brukernavn og passord.'
+          }));
+          return;
+        }
+          
+          res.writeHead(200, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({
+            message: `Motatt brukernavn: ${username.trim()}`
+
+          }));
+        } catch {
+          res.writeHead(400, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({
+            message:'Ugyldige data'
+          }));
+        }
+        });
+
+        return;
+
+    }
+    //Build file path
+
+  
 
   let filePath = path.join(
     __dirname,

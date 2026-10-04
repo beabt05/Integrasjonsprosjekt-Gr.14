@@ -39,6 +39,12 @@ const submitButton = document.querySelector('#navAuthBtn');
 const toRegister = document.querySelector('#navToRegister');
 const toLogin = document.querySelector('#navToLogin');
 const navMessage = document.querySelector('#navAuthMessage');
+const usernameInput = document.querySelector('#navUsername');
+const passwordInput = document.querySelector('#navPassword');
+
+usernameInput.hidden = false;
+usernameInput.disabled = false;
+usernameInput.required = true;
 
 let mode = 'login';
 
@@ -47,6 +53,7 @@ toRegister.addEventListener('click', () => {
   submitButton.textContent = 'Registrer deg';
   toRegister.hidden = true;
   toLogin.hidden = false;
+  passwordInput.autocomplete = 'new-password';
   navMessage.textContent = '';
 });
 
@@ -55,19 +62,21 @@ toLogin.addEventListener('click', () => {
   submitButton.textContent = 'Login';
   toLogin.hidden = true;
   toRegister.hidden = false;
+  passwordInput.autocomplete = 'current-password';
   navMessage.textContent = '';
 });
 
 authForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  const { email, password } = Object.fromEntries(new FormData(authForm));
+  const { username, password } =
+    Object.fromEntries(new FormData(authForm));
 
   try {
     const response = await fetch(`/api/auth/${mode}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ username, password })
     });
 
     const result = await response.json();
@@ -78,5 +87,5 @@ authForm.addEventListener('submit', async (event) => {
     }
   } catch {
     navMessage.textContent = 'Kunne ikke koble opp til serveren.';
-  } 
+  }
 });
