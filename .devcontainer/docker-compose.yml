@@ -18,5 +18,14 @@ services:
     volumes:
       - database-data:/var/lib/mysql
 
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+    depends_on:
+      - db
+
+
 volumes:
   database-data:
