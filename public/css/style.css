@@ -120,7 +120,7 @@ fieldset {
 
 #contact textarea {
 	height:100px;
-	max-width:100%
+	max-width:100%;
   resize:none;
 }
 
@@ -132,7 +132,7 @@ fieldset {
 	color:#FFF;
 	margin:0 0 5px;
 	padding:10px;
-	font-size:15px;r
+	font-size:15px;
 }
 
 #contact button[type="submit"]:hover {

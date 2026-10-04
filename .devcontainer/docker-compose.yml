@@ -1,0 +1,22 @@
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/universal:2
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: local_root_password
+      MARIADB_DATABASE: study_buddy
+      MARIADB_USER: study_user
+      MARIADB_PASSWORD: local_dev_password
+    volumes:
+      - database-data:/var/lib/mysql
+
+volumes:
+  database-data:
