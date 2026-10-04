@@ -3,6 +3,7 @@ const http = require('http')
 const path = require('path')
 const fs = require('fs')
 const db = require('./db')
+const bcrypt = require('bcryptjs')
 
 
 
@@ -15,7 +16,7 @@ const server = http.createServer((req, res) => {
       body += chunk;
     });
 
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
         const {username, password} = JSON.parse(body);
 
@@ -31,13 +32,19 @@ const server = http.createServer((req, res) => {
           }));
           return;
         }
-          
-          res.writeHead(200, {'Content-Type': 'application/json'});
-          res.end(JSON.stringify({
-            message: `Motatt brukernavn: ${username.trim()}`
+          const passwordHash = await bcrypt.hash(password, 12);
+          await db.execute(
+            'INSERT INTO users (username, password_hash) VALUES (?, ?)',
+            [username.trim(), passwordHash]
+          );
 
+          res.writeHead(201, { 'Content-Type': 'application/json'});
+          res.end(JSON.stringify({
+            message:'Bruker opprettet. Nå kan du logge inn.'
           }));
-        } catch {
+
+
+        } catch (err) { console.error('registration failed:', err);
           res.writeHead(400, {'Content-Type': 'application/json'});
           res.end(JSON.stringify({
             message:'Ugyldige data'
@@ -49,7 +56,18 @@ const server = http.createServer((req, res) => {
 
     }
     //Build file path
+if (req.method === 'POST' && req.url === '/api/auth/login') {
+    // Read username and password
+    // Find the user in the database
+    // Compare the password with the saved hash
+    // Send the welcome message if thy match
+    res.writeHead(200, {'Content-Type' : 'application/json'});
+    res.end(JSON.stringify({
+      message: 'Velkommen, ${username}! Du er logget inn!'
 
+    }));
+    return;
+}
   
 
   let filePath = path.join(
