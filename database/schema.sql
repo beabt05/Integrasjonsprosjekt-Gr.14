@@ -8,6 +8,7 @@ USE study_buddy;
 DROP VIEW IF EXISTS registrerte_brukere;
 DROP TABLE IF EXISTS emner;
 DROP TABLE IF EXISTS studenter;
+DROP TABLE IF EXISTS studieokter;
 
 -- Nye studenter/brukere
 CREATE TABLE studenter (
