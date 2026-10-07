@@ -6,9 +6,10 @@ CREATE DATABASE IF NOT EXISTS study_buddy
 USE study_buddy;
 
 DROP VIEW IF EXISTS registrerte_brukere;
+DROP TABLE IF EXISTS deltakere;
+DROP TABLE IF EXISTS studieokter;
 DROP TABLE IF EXISTS emner;
 DROP TABLE IF EXISTS studenter;
-DROP TABLE IF EXISTS studieokter;
 
 -- Nye studenter/brukere
 CREATE TABLE studenter (
@@ -49,4 +50,13 @@ CREATE TABLE studieokter (
   opprettet TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (emne_id)   REFERENCES emner(id),
   FOREIGN KEY (opprettet_av) REFERENCES studenter(id) ON DELETE CASCADE
+);
+
+CREATE TABLE deltakere (
+  okt_id      INT NOT NULL,
+  student_id  INT NOT NULL,
+  ble_med     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (okt_id, student_id), 
+  FOREIGN KEY (okt_id) REFERENCES studieokter(id) ON DELETE CASCADE,
+  FOREIGN KEY (student_id) REFERENCES studenter(id) ON DELETE CASCADE
 );
