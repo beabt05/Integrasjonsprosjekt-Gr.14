@@ -1,5 +1,7 @@
-// Load environment variables from the local .env file so we can connect to the database and configure the server.
+// Load environment variables from the local .env file so the app can access database credentials and server settings.
 require('dotenv').config()
+
+// Import the Node.js built-ins and libraries required for HTTP serving, file handling, crypto hashing and database work.
 const http = require('http')
 const path = require('path')
 const mysql = require('mysql2')
@@ -7,7 +9,7 @@ const fs = require('fs')
 const crypto = require('crypto')
 const { resourceUsage } = require('process')
 
-// Create a single MySQL connection for the app and reuse it for database queries.
+// Create a single MySQL connection and reuse it across the application to reduce connection overhead.
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -15,7 +17,7 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME
 })
 
-// Establish the database connection and log a clear error if initialization fails.
+// Try to open the database connection when the server starts, and fail early with a clear error if credentials are wrong.
 db.connect(err => {
   if (err) {
     console.error('Database connection failed:', err)
@@ -25,16 +27,18 @@ db.connect(err => {
   console.log('Connected to MySQL!')
 })
 
-// Create the main HTTP server and handle both registration requests and static file delivery.
+// Create the main HTTP server. It handles API requests and serves static files from the public directory.
 const server = http.createServer((req, res) => {
 
-  // Handle new user registration submitted as form data.
+  // Handle the registration endpoint: validate input, hash the password, and save the user record.
   if (req.method === 'POST' && req.url === '/api/auth/register') {
+    // Collect the request body so it can be parsed as JSON after the stream ends.
     let body = ''
     req.on('data', chunk => {
       body += chunk
     })
 
+    // Once the full request body is received, parse the JSON and validate the required fields.
     req.on('end', ()=> {
       let data
       try {
@@ -44,15 +48,19 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({message: 'Ugyldig data'}))
         return
       }
+
       const {email, password} = data
       if (!email || !password) {
         res.writeHead(400, {'Content-Type': 'application/json'})
         res.end(JSON.stringify({message: 'Epost og passord må fylles ut'}))
         return
       }
+
+      // Generate a unique salt for each user so password hashes are not predictable.
       const salt = crypto.randomBytes(16).toString('hex')
       const brukernavn = email.split('@')[0]
 
+      // Use scrypt to hash the password before storing it, keeping the original password out of the database.
       crypto.scrypt(password, salt, 64, (err, derivedKey) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json'})
@@ -60,6 +68,7 @@ const server = http.createServer((req, res) => {
           return
         }
 
+        // Save the salt and hash together so the password can later be checked safely.
         const hash = salt + ":" + derivedKey.toString('hex')
         db.query(
           'INSERT INTO studenter (brukernavn, epost, passord) VALUES (?, ?, ?)',
@@ -85,7 +94,7 @@ const server = http.createServer((req, res) => {
     return
   }
 
-  // Build the correct file path for public assets and pages served from the /public folder.
+  // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,
     'public',
