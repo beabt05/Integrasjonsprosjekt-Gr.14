@@ -4,6 +4,7 @@ const http = require('http')
 const path = require('path')
 const mysql = require('mysql2')
 const fs = require('fs')
+const crypto = require('crypto')
 
 // Create a single MySQL connection for the app and reuse it for database queries.
 const db = mysql.createConnection({
@@ -27,19 +28,41 @@ db.connect(err => {
 const server = http.createServer((req, res) => {
 
   // Handle new user registration submitted as form data.
-  if (req.method === 'POST' && req.url === '/register') {
+  if (req.method === 'POST' && req.url === '/api/auth/register') {
     let body = ''
     req.on('data', chunk => {
       body += chunk
     })
 
     req.on('end', ()=> {
-      const params = new URLSearchParams(body)
-      const email = params.get('email')
-      const password = params.get('password')
-      // Return a simple confirmation while the actual registration logic can be expanded later.
-      res.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.end('Got it :' + email)
+      let data
+      try {
+        data = JSON.parse(body)
+      } catch {
+        res.writeHead(400, {'Content-Type': 'application/json'})
+        res.end(JSON.stringify({message: 'Ugyldig data'}))
+        return
+      }
+      const {email, password} = data
+      if (!email || !password) {
+        res.writeHead(400, {'Content-Type': 'application/json'})
+        res.end(JSON.stringify({message: 'Epost og passord må fylles ut'}))
+        return
+      }
+      const salt = crypto.randomBytes(16).toString('hex')
+
+      crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+        if (err) {
+          res.writeHead(500, { 'Content-Type': 'application/json'})
+          res.end(JSON.stringify({ message: 'Noe gikk galt.'}))
+          return
+        }
+
+        const hash = salt + ":" + derivedKey.toString('hex')
+        console.log(hash)
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ message: 'Bruker registrert: ' + email}))
+      })
     })
     return
   }
