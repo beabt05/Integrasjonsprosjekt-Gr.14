@@ -3,49 +3,18 @@
 <meta charset="UTF-8">
 
 <head>
+    <!-- Page metadata and styling for the landing page. -->
     <title>Form</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
 
 </head>
-
-
-
-
-
-<form id="userForm">
-    <label>
-        Navn
-        <input type="text" id="name" required>
-    </label>
-
-    <label>
-        Email
-        <input type="email" id="email" required>
-    </label>
-
-    <label>
-        Role
-        <select id="role">
-            <option value="Member">Medlem</option>
-            <option value="Host">Vert</option>
-            <!--<option value="Member">Member</option>-->
-            <!--<option value="Host">Host</option>-->
-        </select>
-    </label>
-
-    <button type="submit">Lage Bruker</button>
-    <!--<button type="submit">Make User</button>-->
-
-
-</form>
-<p id="message"></p>
-
-
 <br>
 <br>
+    <!-- Main heading for the application landing page. -->
     <h1>Study Buddy</h1>
     
     <!--<h3>Welcome to the landing page</h3>-->
+    <!-- Branding images that help identify the Node.js-based project. -->
     <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
     <img id="node" src="images/node-icon.png" alt="JS icon">
     <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
@@ -53,8 +22,9 @@
     <!--<p class="para">This site is built entirely on Node.js and Node.js backend.
         Node is a JavaScript platform typically used to run JavaScript on servers.<p>
         --><body>
+<!-- Login form for existing users to sign in through the backend endpoint. -->
 <li class="nav-login">
-  <form class="nav-login-form" id="navAuthForm">
+  <form class="nav-login-form" id="navAuthForm" method="POST" action="/register">
     <input type="email" name="email" placeholder="Email"
            required autocomplete="email">
 
@@ -72,6 +42,7 @@
   <p id="navAuthMessage" role="status"></p>
 </li>
 
+<!-- Study session form used to arrange a study meeting. -->
 <div class="container">  
   <form id="contact" action="" method="post">
     <h3>Study Buddy</h3>
@@ -108,6 +79,7 @@
   
 
 </body>
+<!-- Load the frontend scripts that power the interaction logic. -->
 <script src="js/app.js"></script>
 <script src="js/script.js"></script>
 
