@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS studenter;
 -- Nye studenter/brukere
 CREATE TABLE studenter (
   id          INT AUTO_INCREMENT PRIMARY KEY,
-  brukernavn  VARCHAR(50)  NOT NULL UNIQUE,
+  brukernavn  VARCHAR(50)  NOT NULL,
   epost       VARCHAR(255) NOT NULL UNIQUE,
   passord     VARCHAR(255) NOT NULL,
   rolle       ENUM('student', 'admin') NOT NULL DEFAULT 'student',

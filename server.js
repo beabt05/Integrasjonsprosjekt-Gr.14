@@ -5,6 +5,7 @@ const path = require('path')
 const mysql = require('mysql2')
 const fs = require('fs')
 const crypto = require('crypto')
+const { resourceUsage } = require('process')
 
 // Create a single MySQL connection for the app and reuse it for database queries.
 const db = mysql.createConnection({
@@ -50,6 +51,7 @@ const server = http.createServer((req, res) => {
         return
       }
       const salt = crypto.randomBytes(16).toString('hex')
+      const brukernavn = email.split('@')[0]
 
       crypto.scrypt(password, salt, 64, (err, derivedKey) => {
         if (err) {
@@ -59,8 +61,25 @@ const server = http.createServer((req, res) => {
         }
 
         const hash = salt + ":" + derivedKey.toString('hex')
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ message: 'Bruker registrert: ' + email}))
+        db.query(
+          'INSERT INTO studenter (brukernavn, epost, passord) VALUES (?, ?, ?)',
+          [brukernavn, email, hash],
+          (err, result) => {
+            if (err && err.code === 'ER_DUP_ENTRY') {
+              res.writeHead(409, {'Content-Type': 'application/json'})
+              res.end(JSON.stringify({message: 'Eposten er allerede i bruk.'}))
+              console.log(err)
+              return
+            }
+            if (err) {
+              res.writeHead(500, {'Content-Type': 'application/json'})
+              res.end(JSON.stringify({message: 'Noe gikk galt.'}))
+              return
+            }
+            res.writeHead(201, {'Content-Type': 'application/json'})
+            res.end(JSON.stringify({message: 'Bruker registrert'}))
+          }
+        )
       })
     })
     return
