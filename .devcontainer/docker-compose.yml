@@ -1,6 +1,13 @@
+# Shared development environment: MariaDB and phpMyAdmin.
+# Used automatically by Codespaces through devcontainer.json.
+# Teammates can alternatively use their own local database setup.
+# Use database/schema.sql for the shared table structure,
+# and configure application database connections in your own .env.
+
+
 services:
   app:
-    image: mcr.microsoft.com/devcontainers/universal:2
+    image: mcr.microsoft.com/devcontainers/javascript-node:22
     volumes:
       - ../..:/workspaces:cached
     command: sleep infinity
@@ -20,6 +27,8 @@ services:
 
   phpmyadmin:
     image: phpmyadmin:5.2
+    ports:
+    - "8080:80"
     restart: unless-stopped
     environment:
       PMA_HOST: db

@@ -5,6 +5,9 @@ const fs = require('fs')
 const db = require('./db')
 const bcrypt = require('bcryptjs')
 
+db.execute('SELECT DATABASE() AS db_name, @@hostname AS db_server')
+  .then(([rows]) => console.log('Connected database:', rows[0]))
+  .catch(console.error);
 
 
 const server = http.createServer((req, res) => {   
@@ -56,16 +59,45 @@ const server = http.createServer((req, res) => {
 
     }
     //Build file path
-if (req.method === 'POST' && req.url === '/api/auth/login') {
-    // Read username and password
-    // Find the user in the database
+    if (req.method === 'POST' && req.url === '/api/auth/login') {
+        let body = '';
+        req.on('data', chunk => {  //collects data submitted by the form
+          body += chunk;
+        });
+    
+    
     // Compare the password with the saved hash
     // Send the welcome message if thy match
-    res.writeHead(200, {'Content-Type' : 'application/json'});
-    res.end(JSON.stringify({
-      message: 'Velkommen, ${username}! Du er logget inn!'
+    
+    
+    req.on('end', async () => {  // (wraps the username and reads after all the data arrives)
+    const { username, password } = JSON.parse(body);
 
-    }));
+    // Read username and password
+
+    const [users] = await db.execute(  //looks up the submitted username in the db
+    'SELECT username, password_hash FROM users WHERE username = ?',
+    [username]
+      );
+    
+      // Find the user in the database  
+    
+    const user = users[0]; //selects the user returned by the query
+    
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) {  //error handling if the user doesn't exist or password is wrong
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        message: 'Feil brukernavn eller passord.'  
+      }));
+      return;
+    }
+
+      res.writeHead(200, {'Content-Type' : 'application/json'});
+      res.end(JSON.stringify({
+        message: `Velkommen, ${user.username}! Du er logget inn!`
+      }));
+    });
+    
     return;
 }
   

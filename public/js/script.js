@@ -83,7 +83,7 @@ authForm.addEventListener('submit', async (event) => {
     navMessage.textContent = result.message;
 
     if (response.ok && mode === 'login') {
-      window.location.href = '/index.html';
+     // window.location.href = '/index.html';
     }
   } catch {
     navMessage.textContent = 'Kunne ikke koble opp til serveren.';
