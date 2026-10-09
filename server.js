@@ -94,6 +94,65 @@ const server = http.createServer((req, res) => {
     return
   }
 
+  if (req.method === 'POST' && req.url === '/api/auth/login') {
+    let body = ''
+    req.on('data', chunk => {
+      body += chunk
+    })
+
+    req.on('end', () => {
+      let data
+      try {
+        data = JSON.parse(body)
+      } catch {
+        res.writeHead(400, {'Content-Type': 'application/json'})
+        res.end(JSON.stringify({message: 'Ugyldig data'}))
+        return
+      }
+
+      const {email, password} = data
+      if (!email || !password) {
+        res.writeHead(400, {'Content-Type': 'application/json'})
+        res.end(JSON.stringify({message: 'Epost og passord må fylles ut'}))
+        return
+      }
+
+      db.query(
+        'SELECT passord FROM studenter WHERE epost = ?',
+        [email],
+        (err, rows) => {
+          if (err) {
+            res.writeHead(500, {'Content-Type': 'application/json'})
+            res.end(JSON.stringify({message: 'Noe gikk galt.'}))
+            return
+          }
+          if (rows.length === 0) {
+            res.writeHead(401, {'Content-Type': 'application/json'})
+            res.end(JSON.stringify({message: 'Feil passord eller epost.'}))
+            return
+          }
+          const [salt, storedHash] = rows[0].passord.split(':')
+          crypto.scrypt(password, salt, 64, (err, derivedKey) => {
+            if (err) {
+              res.writeHead(500, {'Content-Type': 'application/json'})
+              res.end(JSON.stringify({message: 'Noe gikk galt.'}))
+              return
+            }
+            const match = crypto.timingSafeEqual(derivedKey, Buffer.from(storedHash, 'hex'))
+
+            if (match) {
+              res.writeHead(200, {'Content-Type': 'application/json'})
+              res.end(JSON.stringify({message: 'Innlogging vellykket.'}))
+              return
+            }
+            res.writeHead(401, {'Content-Type': 'application/json'})
+            res.end(JSON.stringify({message: 'Feil passord eller epost.'}))
+          })
+        }
+      )
+    })
+    return
+  }
   // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,
