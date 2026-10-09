@@ -14,9 +14,11 @@
 <br>
 <li class="nav-login">
   <form class="nav-login-form" id="navAuthForm">
-    <input type="email" name="email" placeholder="Email"
-           required autocomplete="email">
-
+    <input type="text" name="username" id="navUsername"
+       placeholder="Brukernavn" autocomplete="username"
+       minlength="2" maxlength="50" hidden disabled>
+    <input type="email" name="email" id="navEmail"
+       placeholder="E-postadresse" required autocomplete="email">
     <input type="password" name="password" id="navPassword"
            placeholder="Passord" required autocomplete="current-password">
 
@@ -48,16 +50,25 @@
     <h3>Study Buddy</h3>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
-      <input placeholder="Vertsnavn" type="text" tabindex="1" required autofocus>
+      <input name="tittel" placeholder="Tittel på studieøkten" type="text" maxlength="100" required autofocus>
     </fieldset>
-    <fieldset>
-      <input placeholder="E-postadresse" type="email" tabindex="2" required>
-    </fieldset>
+    <fieldset class="session-row">
+  <div>
+    <label for="session-start">Starttid</label>
+    <input id="session-start" name="starttid" type="time" required>
+  </div>
+  <div>
+    <label for="session-capacity">Maks deltakere</label>
+    <input id="session-capacity" name="maks_deltakere"
+           type="number" min="1" value="3" required>
+  </div>
+</fieldset>
        <fieldset>
-      <input placeholder="date" type="date" tabindex="2" required>
+      <label for="session-date">Dato</label>
+      <input id="session-date" name="dato" type="date" required>
     </fieldset>
 <fieldset>
-    <select name="course-code" multiple = "multiple">
+    <select name="course-code" required>
         <option value="" disabled selected>Emne kode og kurs navn</option>
         <option value="IDG2052">IDG2052 Programmering</option>
         <option value="IDATG2208">IDATG2208 Machine Learning</option>
@@ -66,11 +77,16 @@
     </select>
 </fieldset>
     <fieldset>
-                 <textarea placeholder="Skriv gruppesesjonsbeskrivelsen her..." tabindex="5" required></textarea>
-    </fieldset>
-    <fieldset>
+  <input name="bygning" placeholder="Bygning" type="text" maxlength="10">
+</fieldset>
+<fieldset>
+  <input name="rom" placeholder="Rom" type="text" maxlength="10">
+</fieldset>
+
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
     </fieldset>
+    <p id="session-message" role="status"></p>
+<div id="session-list"></div>
   </form>
 <!--
 <form id="userForm">
@@ -100,8 +116,7 @@
 
 </form>
 <p id="message"></p>
--->
- -->
+
       <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
     <img id="node" src="images/node-icon.png" alt="JS icon">
     <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 

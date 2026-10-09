@@ -8,6 +8,7 @@ body {
     font-family:Arial, Helvetica, sans-serif;
     background: rgb(191, 194, 193);
     color: black;
+	padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 @font-face {
@@ -18,7 +19,7 @@ body {
 
 h1 {
     font-family: Lobster;
-    font-size: 64px;
+    font-size: 40px;
     color:#EB5757;
 }
 
@@ -69,18 +70,19 @@ li {
 }
 
 .container {
-	max-width:400px;
-	width:100%;
-	margin:0 auto;
-	position:relative;
+  min-width: 296px;
+  max-width: 400px;
+  width: calc(100% - 24px);
+  margin: 0 auto;
+  position: relative;
 }
 
 #contact input[type="text"], #contact input[type="email"], #contact textarea, #contact button[type="submit"] { font:400 12px/16px "Open Sans", Helvetica, Arial, sans-serif; }
 
 #contact {
 	background:#F9F9F9;
-	padding:25px;
-	margin:50px 0;
+	padding:16px;
+	margin:16px 0;
 }
 
 #contact h3 {
@@ -98,7 +100,7 @@ li {
 
 fieldset {
 	border: medium none !important;
-	margin: 0 0 10px;
+	margin: 0 0 6px;
 	min-width: 100%;
 	padding: 0;
 	width: 100%;
@@ -151,8 +153,52 @@ fieldset {
     color: #888;
 }
 #navAuthMessage {
-	color: white;
+	color: rgb(22, 73, 241);
 	display: block;
-	font-size: 30px;
-	font-weight: 400;
+	font-size: 14px;
+	line-height: 1.4;
+	min-height: 40px;
+}
+
+#contact .session-row {
+  display: flex;
+  gap: 12px;
+}
+
+#contact .session-row > div {
+  flex: 1;
+  min-width: 0;
+}
+
+#contact .session-row label {
+  display: block;
+}
+
+#contact .session-row input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#contact .session-row input {
+  height: 42px;
+  padding: 10px;
+  margin: 0;
+  border: 1px solid #ccc;
+}
+
+#contact label {
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+#contact input[type="date"],
+#contact input[type="time"],
+#contact input[type="number"] {
+  font-family: inherit;
+  font-size: 14px;
+}
+#contact input[type="date"],
+#contact select {
+  color: #757575;
 }
