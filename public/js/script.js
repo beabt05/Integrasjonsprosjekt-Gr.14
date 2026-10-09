@@ -42,14 +42,17 @@ const navMessage = document.querySelector('#navAuthMessage');
 const usernameInput = document.querySelector('#navUsername');
 const passwordInput = document.querySelector('#navPassword');
 
-usernameInput.hidden = false;
-usernameInput.disabled = false;
-usernameInput.required = true;
+usernameInput.hidden = true;
+usernameInput.disabled = true;
+usernameInput.required = false;
 
 let mode = 'login';
 
 toRegister.addEventListener('click', () => {
   mode = 'register';
+  usernameInput.hidden = false;
+  usernameInput.disabled = false;
+  usernameInput.required = true;
   submitButton.textContent = 'Registrer deg';
   toRegister.hidden = true;
   toLogin.hidden = false;
@@ -59,6 +62,9 @@ toRegister.addEventListener('click', () => {
 
 toLogin.addEventListener('click', () => {
   mode = 'login';
+  usernameInput.hidden = true;
+  usernameInput.disabled = true;
+  usernameInput.required = false;
   submitButton.textContent = 'Login';
   toLogin.hidden = true;
   toRegister.hidden = false;
@@ -69,14 +75,14 @@ toLogin.addEventListener('click', () => {
 authForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  const { username, password } =
-    Object.fromEntries(new FormData(authForm));
+  const { username, email, password } =
+  Object.fromEntries(new FormData(authForm));
 
   try {
     const response = await fetch(`/api/auth/${mode}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, email, password })
     });
 
     const result = await response.json();

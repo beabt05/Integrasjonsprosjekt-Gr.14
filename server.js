@@ -3,7 +3,9 @@ const http = require('http')
 const path = require('path')
 const fs = require('fs')
 const db = require('./db')
-const bcrypt = require('bcryptjs')
+const crypto = require('crypto')
+const { promisify } = require('util');
+const scrypt = promisify(crypto.scrypt);
 
 db.execute('SELECT DATABASE() AS db_name, @@hostname AS db_server')
   .then(([rows]) => console.log('Connected database:', rows[0]))
@@ -21,11 +23,13 @@ const server = http.createServer((req, res) => {
 
     req.on('end', async () => {
       try {
-        const {username, password} = JSON.parse(body);
+        const { username, email, password } = JSON.parse(body);
 
         if (
           typeof username !== 'string' ||
           typeof password !== 'string' ||
+          typeof email !== 'string' ||
+          !email.trim() ||
           !username.trim() ||
           !password
         ) {
@@ -35,10 +39,12 @@ const server = http.createServer((req, res) => {
           }));
           return;
         }
-          const passwordHash = await bcrypt.hash(password, 12);
+          const salt = crypto.randomBytes(16).toString('hex');
+          const derivedKey = await scrypt(password, salt, 64);
+          const passwordHash = salt + ':' + derivedKey.toString('hex');
           await db.execute(
-            'INSERT INTO users (username, password_hash) VALUES (?, ?)',
-            [username.trim(), passwordHash]
+            'INSERT INTO studenter (brukernavn, epost, passord) VALUES (?, ?, ?)',
+            [username.trim(), email.trim(), passwordHash]
           );
 
           res.writeHead(201, { 'Content-Type': 'application/json'});
@@ -71,20 +77,35 @@ const server = http.createServer((req, res) => {
     
     
     req.on('end', async () => {  // (wraps the username and reads after all the data arrives)
-    const { username, password } = JSON.parse(body);
+      try {
+    const { email, password } = JSON.parse(body);
+    
+
+    if (
+      typeof email !== 'string' ||
+      typeof password !== 'string' ||
+      !email.trim() ||
+      !password
+    ) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        message: 'Skriv inn e-postadresse og passord.'
+      }));
+      return;
+    }
 
     // Read username and password
 
-    const [users] = await db.execute(  //looks up the submitted username in the db
-    'SELECT username, password_hash FROM users WHERE username = ?',
-    [username]
-      );
+    const [users] = await db.execute(
+    'SELECT brukernavn AS username, passord AS password_hash FROM studenter WHERE epost = ?',
+    [email]
+    );;
     
       // Find the user in the database  
     
     const user = users[0]; //selects the user returned by the query
     
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {  //error handling if the user doesn't exist or password is wrong
+    if (!user) {  //error handling if the user doesn't exist or password is wrong
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
         message: 'Feil brukernavn eller passord.'  
@@ -92,13 +113,35 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    const [salt, storedHash] = user.password_hash.split(':');
+    const savedKey = Buffer.from(storedHash, 'hex');
+    const enteredKey = await scrypt(password, salt, 64);
+
+    if (
+      savedKey.length !== enteredKey.length ||  //This rejects incorrect passwords before the welcome response.
+      !crypto.timingSafeEqual(savedKey, enteredKey)
+    ) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        message: 'Feil e-postadresse eller passord.'
+      }));
+      return;
+    }
+
       res.writeHead(200, {'Content-Type' : 'application/json'});
       res.end(JSON.stringify({
         message: `Velkommen, ${user.username}! Du er logget inn!`
-      }));
-    });
-    
-    return;
+    }));
+  } catch (err) {
+    console.error('login failed:', err);
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      message: 'Kunne ikke logge inn. Prøv igjen senere.'
+    }));
+  }
+});
+
+return;
 }
   
 
