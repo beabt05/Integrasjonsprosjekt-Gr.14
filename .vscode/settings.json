@@ -1,0 +1,13 @@
+{
+  "remote.restoreForwardedPorts": false,
+  "remote.portsAttributes": {
+    "3000": {
+      "label": "Study Buddy demo",
+      "protocol": "http"
+    },
+    "8080": {
+      "label": "phpMyAdmin",
+      "protocol": "http"
+    }
+  }
+}
