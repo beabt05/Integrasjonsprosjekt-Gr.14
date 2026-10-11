@@ -12,8 +12,9 @@
   "postStartCommand": "setsid -f socat TCP-LISTEN:8080,fork,reuseaddr TCP:phpmyadmin:80 > /tmp/study-buddy-db-admin.log 2>&1 < /dev/null",
   "shutdownAction": "stopCompose",
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  },
+  "ghcr.io/devcontainers/features/github-cli:1": {},
+  "ghcr.io/devcontainers/features/git-lfs:1": {}
+},
   "portsAttributes": {
     "3000": {
       "label": "Study Buddy demo",
