@@ -8,6 +8,7 @@
   "service": "app",
   "runServices": ["app", "db", "phpmyadmin"],
   "workspaceFolder": "/workspaces/Integrasjonsprosjekt-Gr.14",
-  "forwardPorts": [3000, "phpmyadmin:80"],
+  "forwardPorts": [3000, 8080],
+  "postStartCommand": "setsid -f socat TCP-LISTEN:8080,fork,reuseaddr TCP:phpmyadmin:80 > /tmp/study-buddy-db-admin.log 2>&1 < /dev/null",
   "shutdownAction": "stopCompose"
 }
