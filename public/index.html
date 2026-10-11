@@ -22,8 +22,9 @@ provide the shared Codespaces configuration.
 </head>
 
 <body></body>
-<div class="container"
+<div class="container" id="authBar">
 <br>
+<h1>Study Buddy</h1>
 <br>
 <li class="nav-login">
   <form class="nav-login-form" id="navAuthForm">
@@ -39,18 +40,14 @@ provide the shared Codespaces configuration.
   </form>
 
   <div class="nav-login-toggle">
-    <button type="button" id="navToRegister">Ikke registrert enna?</button>
-    <button type="button" id="navToLogin" hidden>Allerede registrert?</button>
-    <button type="button" id="forgottrnPassword" hidden>Glemte passord?</button>
+    <span id="navToRegister">Ikke registrert enna?</span>
+    <span type="button" id="navToLogin" hidden>Allerede registrert?</span>
+    <span type="button" id="forgottrnPassword" hidden>Glemte passord?</span>
   </div>
 
   <p id="navAuthMessage" role="status"></p>
 </li>
 
-
-<br>
-<br>
-    <h1>Study Buddy</h1>
 </div>
     <!--<h3>Welcome to the landing page</h3>-->
     <!--<p class="para">This site is built entirely on Node.js and Node.js backend.
@@ -60,7 +57,7 @@ provide the shared Codespaces configuration.
 
 <div class="container">  
   <form id="contact" action="" method="post">
-    <h3>Study Buddy</h3>
+    <h1>Study Buddy</h1>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
       <input name="tittel" placeholder="Tittel på studieøkten" type="text" maxlength="100" required autofocus>

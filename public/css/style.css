@@ -100,7 +100,7 @@ li {
 
 fieldset {
 	border: medium none !important;
-	margin: 0 0 6px;
+	margin: 0 0 0px;
 	min-width: 100%;
 	padding: 0;
 	width: 100%;
@@ -201,4 +201,47 @@ fieldset {
 #contact input[type="date"],
 #contact select {
   color: #757575;
+}
+
+form input, form textarea {
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+	
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+	border-radius: 5px;
+}
+
+.nav-login-form button {
+    background: #2563eb;
+    color: #fff;
+	padding: 10px 20px;
+	border-radius: 5px;
+	
+}
+
+#navToRegister span {
+    cursor: pointer;
+    color: #4a7cff;
+}
+.nav-login-toggle span {
+    cursor: pointer;
+    color: #4a7cff;
+	font-size: 0.9rem;
+    font-weight: 700;
+}
+
+#authBar {
+    z-index: 1000;
+    background: #c8c9cb;
+    border-radius: 8px;
+    padding:0 40px 0 40px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+	
 }
