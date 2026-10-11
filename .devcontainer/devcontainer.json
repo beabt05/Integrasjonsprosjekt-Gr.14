@@ -10,5 +10,19 @@
   "workspaceFolder": "/workspaces/Integrasjonsprosjekt-Gr.14",
   "forwardPorts": [3000, 8080],
   "postStartCommand": "setsid -f socat TCP-LISTEN:8080,fork,reuseaddr TCP:phpmyadmin:80 > /tmp/study-buddy-db-admin.log 2>&1 < /dev/null",
-  "shutdownAction": "stopCompose"
+  "shutdownAction": "stopCompose",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "portsAttributes": {
+    "3000": {
+      "label": "Study Buddy demo",
+      "protocol": "http"
+    },
+    "8080": {
+      "label": "phpMyAdmin",
+      "protocol": "http"
+    }
+  },
+  "postAttachCommand": "gh codespace ports visibility 3000:public 8080:private -c \"$CODESPACE_NAME\""
 }
