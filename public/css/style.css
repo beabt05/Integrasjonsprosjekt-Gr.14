@@ -235,12 +235,10 @@ form {
 }
 
 #authBar {
+    
     z-index: 1000;
-    background: #c8c9cb;
     border-radius: 8px;
     padding:0 40px 0 40px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-	
 }
 
 #sessionItem {
@@ -296,3 +294,25 @@ a {
     border-radius: 4px;
     
 }
+
+#authModal {
+  margin: auto;
+  margin-top: 10vh;
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  width: min(90vw, 420px);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#authModal::backdrop {
+  background: rgba(243, 242, 242, 0.5);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+
+

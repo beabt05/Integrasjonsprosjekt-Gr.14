@@ -71,7 +71,7 @@ toLogin.addEventListener('click', () => {
   passwordInput.autocomplete = 'current-password';
   navMessage.textContent = '';
 });
-
+/* 
 authForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
@@ -94,4 +94,20 @@ authForm.addEventListener('submit', async (event) => {
   } catch {
     navMessage.textContent = 'Kunne ikke koble opp til serveren.';
   }
+});
+*/
+
+const authModal = document.querySelector("#authModal");
+const mainScreen = document.querySelector("#mainScreen");
+
+authModal.showModal();
+
+
+authForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  // TEMP: Frontend preview only. No server request or authentication.
+  // Restore backend authentication before using real accounts.
+  mainScreen.hidden = false;
+  authModal.close();
 });
