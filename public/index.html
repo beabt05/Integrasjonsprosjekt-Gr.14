@@ -1,3 +1,16 @@
+<!--
+Development/testing: https://improved-waffle-q6qrgjv4px92xxv4-3000.app.github.dev/
+The shared Codespaces URL works only while Art's Codespace and
+Node server (npm start) are running. If unavailable later, the
+demo may simply be offline.
+
+For independent development, set up your own Codespace or local
+environment using database/schema.sql and your own .env settings.
+.devcontainer/devcontainer.json and .devcontainer/docker-compose.yml
+provide the shared Codespaces configuration.
+-->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="UTF-8">
@@ -9,8 +22,9 @@
 </head>
 
 <body></body>
-<div class="container"
+<div class="container" id="authBar">
 <br>
+<h1>Study Buddy</h1>
 <br>
 <li class="nav-login">
   <form class="nav-login-form" id="navAuthForm">
@@ -26,18 +40,14 @@
   </form>
 
   <div class="nav-login-toggle">
-    <button type="button" id="navToRegister">Ikke registrert enna?</button>
-    <button type="button" id="navToLogin" hidden>Allerede registrert?</button>
-    <button type="button" id="forgottrnPassword" hidden>Glemte passord?</button>
+    <span id="navToRegister">Ikke registrert enna?</span>
+    <span type="button" id="navToLogin" hidden>Allerede registrert?</span>
+    <span type="button" id="forgottrnPassword" hidden>Glemte passord?</span>
   </div>
 
   <p id="navAuthMessage" role="status"></p>
 </li>
 
-
-<br>
-<br>
-    <h1>Study Buddy</h1>
 </div>
     <!--<h3>Welcome to the landing page</h3>-->
     <!--<p class="para">This site is built entirely on Node.js and Node.js backend.
@@ -47,7 +57,7 @@
 
 <div class="container">  
   <form id="contact" action="" method="post">
-    <h3>Study Buddy</h3>
+    <h1>Study Buddy</h1>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
       <input name="tittel" placeholder="Tittel på studieøkten" type="text" maxlength="100" required autofocus>
@@ -82,7 +92,7 @@
 <fieldset>
   <input name="rom" placeholder="Rom" type="text" maxlength="10">
 </fieldset>
-
+<fieldset>
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
     </fieldset>
     <p id="session-message" role="status"></p>
@@ -146,7 +156,7 @@
   
 
 </body>
-<script src="js/app.js"></script>
+
 <script src="js/script.js"></script>
 
 </html>

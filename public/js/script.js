@@ -39,44 +39,59 @@ const submitButton = document.querySelector('#navAuthBtn');
 const toRegister = document.querySelector('#navToRegister');
 const toLogin = document.querySelector('#navToLogin');
 const navMessage = document.querySelector('#navAuthMessage');
+const usernameInput = document.querySelector('#navUsername');
+const passwordInput = document.querySelector('#navPassword');
+
+usernameInput.hidden = true;
+usernameInput.disabled = true;
+usernameInput.required = false;
 
 let mode = 'login';
 
 toRegister.addEventListener('click', () => {
   mode = 'register';
+  usernameInput.hidden = false;
+  usernameInput.disabled = false;
+  usernameInput.required = true;
   submitButton.textContent = 'Registrer deg';
   toRegister.hidden = true;
   toLogin.hidden = false;
+  passwordInput.autocomplete = 'new-password';
   navMessage.textContent = '';
 });
 
 toLogin.addEventListener('click', () => {
   mode = 'login';
+  usernameInput.hidden = true;
+  usernameInput.disabled = true;
+  usernameInput.required = false;
   submitButton.textContent = 'Login';
   toLogin.hidden = true;
   toRegister.hidden = false;
+  passwordInput.autocomplete = 'current-password';
   navMessage.textContent = '';
 });
 
 authForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  const { email, password } = Object.fromEntries(new FormData(authForm));
+  const { username, email, password } =
+  Object.fromEntries(new FormData(authForm));
 
   try {
     const response = await fetch(`/api/auth/${mode}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ username, email, password })
     });
 
     const result = await response.json();
     navMessage.textContent = result.message;
 
     if (response.ok && mode === 'login') {
-      window.location.href = '/index.html';
+     // window.location.href = '/index.html';
     }
   } catch {
     navMessage.textContent = 'Kunne ikke koble opp til serveren.';
-  } 
+  }
 });
