@@ -89,9 +89,15 @@ authForm.addEventListener('submit', async (event) => {
     navMessage.textContent = result.message;
 
     if (response.ok && mode === 'login') {
-     // window.location.href = '/index.html';
+      mainScreen.hidden = false;
+      authModal.close();
     }
   } catch {
     navMessage.textContent = 'Kunne ikke koble opp til serveren.';
   }
 });
+
+const authModal = document.querySelector("#authModal");
+const mainScreen = document.querySelector("#mainScreen");
+
+authModal.showModal();
