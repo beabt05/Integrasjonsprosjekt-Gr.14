@@ -1,0 +1,1 @@
+const hostId = req.session.userId;
