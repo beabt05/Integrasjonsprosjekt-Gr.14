@@ -1,5 +1,6 @@
 const crypto = require('crypto')
 const db = require('../config/db')
+const {createSession} = require('../utils/authSession')
 
 // Register a new student account by validating the input, hashing the password,
 // and inserting the user record into the database with a unique username.
@@ -93,7 +94,7 @@ function login(req, res) {
 
       // Find the stored hash for the email address before verifying the submitted password.
       db.query(
-        'SELECT passord FROM studenter WHERE epost = ?',
+        'SELECT id, passord FROM studenter WHERE epost = ?',
         [email],
         (err, rows) => {
           if (err) {
@@ -120,8 +121,9 @@ function login(req, res) {
             const match = crypto.timingSafeEqual(derivedKey, Buffer.from(storedHash, 'hex'))
 
             if (match) {
-              res.writeHead(200, {'Content-Type': 'application/json'})
+              res.writeHead(200, {'Content-Type': 'application/json', 'Set-Cookie': 'sid=${token}; HttpOnly; SameSite=Lax; Path=/'})
               res.end(JSON.stringify({message: 'Innlogging vellykket.'}))
+              createSession(rows[0].id)
               return
             }
             res.writeHead(401, {'Content-Type': 'application/json'})
