@@ -56,49 +56,50 @@ provide the shared Codespaces configuration.
         -->
 
 <main id="mainScreen" hidden>
-<div class="container">  
-  <form id="contact" action="" method="post">
+<div class="container">
+  <form id="contact">
     <h1>Study Buddy</h1>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
-      <input name="tittel" placeholder="Tittel på studieøkten" type="text" maxlength="100" required autofocus>
+      <input id="session-titel" name="tittel" placeholder="Tittel på studieøkten" type="text" maxlength="100" required autofocus>
     </fieldset>
     <fieldset class="session-row">
-  <div>
-    <label for="session-start">Starttid</label>
-    <input id="session-start" name="starttid" type="time" required>
-  </div>
-  <div>
-    <label for="session-capacity">Maks deltakere</label>
-    <input id="session-capacity" name="maks_deltakere"
-           type="number" min="1" value="3" required>
-  </div>
-</fieldset>
-       <fieldset>
+      <div>
+        <label for="session-start">Starttid</label>
+        <input id="session-start" name="starttid" type="time" required>
+      </div>
+      <div>
+        <label for="session-capacity">Maks deltakere</label>
+        <input id="session-capacity" name="maks_deltakere" type="number" min="1" value="3" required>
+      </div>
+    </fieldset>
+    <fieldset>
       <label for="session-date">Dato</label>
       <input id="session-date" name="dato" type="date" required>
     </fieldset>
-<fieldset>
-    <select name="course-code" required>
+    <fieldset>
+      <select id="course-code-num" name="course-code" required>
         <option value="" disabled selected>Emne kode og kurs navn</option>
         <option value="IDG2052">IDG2052 Programmering</option>
         <option value="IDATG2208">IDATG2208 Machine Learning</option>
         <option value="IDATG2102">IDATG2102 Alogrithmic Methods</option>
-       
-    </select>
-</fieldset>
+      </select>
+    </fieldset>
     <fieldset>
-  <input name="bygning" placeholder="Bygning" type="text" maxlength="10">
-</fieldset>
-<fieldset>
-  <input name="rom" placeholder="Rom" type="text" maxlength="10">
-</fieldset>
-<fieldset>
+      <input id="bygningNo" class="bygning" placeholder="Bygning" type="text" maxlength="10">
+    </fieldset>
+    <fieldset>
+      <input name="rom" placeholder="Rom" type="text" maxlength="10">
+    </fieldset>
+    <fieldset>
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
     </fieldset>
     <p id="session-message" role="status"></p>
-<div id="session-list"></div>
+    <div id="session-list"></div>
   </form>
+
+  <button type="button" class="btn btn-sm" id="clearAll" name="button">clear all</button>
+</div>
 
 
 
@@ -133,21 +134,14 @@ provide the shared Codespaces configuration.
 
 
 <!-- Session Card-->
-  <div class="session-card" id="sessionItem">
-    <li class="item-session-date"id="session-date"><a>fredag 16. oktober 2026</a></li>
-    <div class="session-location">
-    <span class="item-session-start">10:30</span>
-    <span id="item-bygning">Ametyst</span> <span id="item-rom">K109</span></div>
-    <h2 id="item-tittel">Kodeknekk og kaffepause</h2>
-    
-    <p id="item-beskrivelse">En avslappet og hyggelig kollokviegruppe for alle som er interessert i programmering.</p>
-    <div class="session-host">
-    Vert: <span class="session-host-username">Art</span>
-  </div>
+
+<div id="sessionCard"></div>
+
+
 
 </div>
-
-
+ 
+<div class="container">
       <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
     <img id="node" src="images/node-icon.png" alt="JS icon">
     <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
@@ -159,5 +153,6 @@ provide the shared Codespaces configuration.
 </body>
 
 <script src="js/script.js"></script>
+<script src="js/crud.js"></script>
 
 </html>
