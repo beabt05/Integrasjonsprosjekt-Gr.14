@@ -143,7 +143,19 @@ const server = http.createServer((req, res) => {
 
 return;
 }
-  
+  if (req.method == 'POST' && req.url === '/api/sessions') {
+    let body = '';
+        req.on('data', chunk => {  //collects data submitted by the form
+          body += chunk;
+        });
+    req.on('end', async () => {
+      try{
+        const {emneID, opprettetAv, tittel, bygning, rom, maksDeltakere, dato, starttid} = JSON.parse(body)
+      } catch (err) {console.error('Session creation failed: ', err);
+
+      }
+    }) 
+  }
 
   let filePath = path.join(
     __dirname,
