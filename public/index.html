@@ -50,6 +50,15 @@ provide the shared Codespaces configuration.
   passord, og trykk «Login» for å se hovedsiden. Ingen innlogging utføres.
 </p>
   <p id="navAuthMessage" role="status"></p>
+  <details>
+    <summary>Hva er study Buddy</summary>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+      sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+      Excepteur sint occaecat cupidatat non proident,
+      sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  </details>
 </li>
 </div>
 </dialog>
@@ -59,8 +68,8 @@ provide the shared Codespaces configuration.
         -->
 
 <main id="mainScreen" hidden>
-<div class="container">
-  <form id="contact">
+<div class="container" id="appFrame">
+  <form id="contact" hidden>
     <h1>Study Buddy</h1>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
@@ -101,9 +110,30 @@ provide the shared Codespaces configuration.
     <div id="session-list"></div>
   </form>
 
-  <button type="button" class="btn btn-sm" id="clearAll" name="button">clear all</button>
+  <button type="button" class="btn btn-sm" id="clearAll" name="button" hidden>clear all</button>
+  <header>
+    <h2>Home</h2>
+    <img src="images/profilepicturelogo.png" alt="" width="40" height="40">
+  </header>
+  <section id="homesection"></section>
+  <div id="activeSessions">
+  </div>
+  <div id="upcomingSessions">
+  </div>
+  <section id="sessionssection" hidden>Sessions</section>
+  <section id="settingssection" hidden>Settings</section>
+  <nav>
+    <button data-target="homesection">
+      <img src="images/homebutton.png" alt="Home" width="48" height="48">
+    </button>
+    <button data-target="sessionssection">
+      <img src="images/sessionslogov2.png" alt="Sessions" width="48" height="48">
+    </button>
+    <button data-target="settingssection">
+      <img src="images/settingslogo.png" alt="Settings" width="48" height="48">
+    </button>
+  </nav>
 </div>
-
 
 
 <!--
@@ -144,12 +174,12 @@ provide the shared Codespaces configuration.
 
 </div>
  
-<div class="container">
+<!--<div class="container">
       <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
     <img id="node" src="images/node-icon.png" alt="JS icon">
     <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
         Node er en JavaScript-plattform som vanligvis brukes til å kjøre JavaScript på servere.<p>
-</div>
+</div>-->
 </main>
   
 
