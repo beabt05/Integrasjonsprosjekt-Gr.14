@@ -77,7 +77,7 @@ header h2 {
   text-align: center;
 }
 
-header img{
+#profilepic{
   border: solid 1px;
   border-radius: 50%;
   object-fit: cover;
@@ -86,6 +86,11 @@ header img{
   margin-right: 5px;
 }
 
+header img{
+  grid-column: 1;
+  justify-self: end;
+  margin-right: 5px;
+}
 .container {
   min-width: 296px;
   max-width: 400px;
