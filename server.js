@@ -23,7 +23,7 @@ const server = http.createServer((req, res) => {
     req.on("end", async () => {
       try {
         const data = new URLSearchParams(body);
-        const studentId = 1; // Replace with your student ID for this local test.
+        const studentId = Number(data.get("opprettet_av")); // Replace with your student ID for this local test.
 
         // Find the course ID using the course code from the form.
         const courseCode = data.get("emne_id") ?? data.get("courseCode");
@@ -151,7 +151,7 @@ const server = http.createServer((req, res) => {
     // Read username and password
 
     const [users] = await db.execute(
-    'SELECT brukernavn AS username, passord AS password_hash FROM studenter WHERE epost = ?',
+    'SELECT id, brukernavn AS username, passord AS password_hash FROM studenter WHERE epost = ?',
     [email]
     );;
     
@@ -185,8 +185,9 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, {'Content-Type' : 'application/json'});
       res.end(JSON.stringify({
         message: `Velkommen, ${user.username}! Du er logget inn!`,
-        userId: user.id
-    }));
+        userId: user.id,
+        username: user.username
+      }));
   } catch (err) {
     console.error('login failed:', err);
     res.writeHead(500, { 'Content-Type': 'application/json' });

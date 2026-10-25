@@ -72,6 +72,9 @@ toLogin.addEventListener('click', () => {
   navMessage.textContent = '';
 });
 
+
+// authForm lock reads the inputs and sends them to /api/auth/login or /api/auth/register in server.js.
+
 authForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
@@ -87,19 +90,27 @@ authForm.addEventListener('submit', async (event) => {
 
     const result = await response.json();
 
-    if (response.ok && mode === "login") {
-        localStorage.setItem("userId", result.userId);
-    }
+   
+console.log("Login response:", result);
 
-    navMessage.textContent = result.message;
+  if (response.ok && mode === "login") {
+      localStorage.setItem("userId", result.userId);
+      localStorage.setItem("username", result.username);
 
-    if (response.ok && mode === 'login') {
+      document.getElementById("welcomeMessage").textContent =
+          `Velkommen, ${result.username}!`;
+  }
+
+  navMessage.textContent = result.message;
+
+  if (response.ok && mode === "login") {
       mainScreen.hidden = false;
       authModal.close();
-    }
-  } catch {
-    navMessage.textContent = 'Kunne ikke koble opp til serveren.';
   }
+  } catch (err) {
+    console.error("Login error:", err);
+    navMessage.textContent = 'Kunne ikke koble opp til serveren.';
+}
 });
 
 const authModal = document.querySelector("#authModal");

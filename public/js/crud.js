@@ -48,7 +48,8 @@ submit_btn.addEventListener("click", function (e) {
          capacity: sessionCapacity.value,
          date: sessionDate.value,
          courseCode: courseCode.value,
-         buildingName: buildingName.value
+         buildingName: buildingName.value,
+         opprettet_av: localStorage.getItem("userId")
       })
    })
    .then(response => {
@@ -114,6 +115,10 @@ function addSessionDOM(values) {
             <strong>Maks deltakere:</strong>
             <span class="session-capacity"></span>
          </p>
+         <p>
+            <strong>Vert:</strong>
+            <span class="session-host"></span>
+         </p>
 
          <div class="session-actions">
             <button type="button" class="edit">edit</button>
@@ -125,6 +130,10 @@ function addSessionDOM(values) {
    fields.forEach(([className], index) => {
       studysession.querySelector("." + className).textContent = values[index];
    });
+
+
+   studysession.querySelector(".session-host").textContent =
+    localStorage.getItem("username") || "";
 
    sessionCard.appendChild(studysession);
 }
