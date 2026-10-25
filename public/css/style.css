@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,400italic,600|Lobster");
+
 * {
 	margin:0;
 	padding:0;
@@ -13,6 +15,7 @@ body {
 }
 
 @font-face {
+
     font-family: "Lobster";
     src: url("/fonts/Lobster-Regular.ttf") format("truetype");
 }
@@ -51,7 +54,7 @@ p {
     float: right;
     width: 80px;
 }
-@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,400italic,600|Lobster");
+
 
 h3 {  	
   font-family:"Lobster", Helvetica, Arial, sans-serif;

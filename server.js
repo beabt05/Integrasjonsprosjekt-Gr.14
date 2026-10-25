@@ -13,6 +13,60 @@ db.execute('SELECT DATABASE() AS db_name, @@hostname AS db_server')
 
 
 const server = http.createServer((req, res) => {   
+  if (req.method === "POST" && req.url === "/api/studieokter") {
+    let body = "";
+
+    req.on("data", chunk => {
+      body += chunk;
+    });
+
+    req.on("end", async () => {
+      try {
+        const data = new URLSearchParams(body);
+        const studentId = 1; // Replace with your student ID for this local test.
+
+        // Find the course ID using the course code from the form.
+        const courseCode = data.get("emne_id") ?? data.get("courseCode");
+        const [courses] = await db.execute(
+          "SELECT id FROM emner WHERE emnekode = ?",
+          [courseCode]
+        );
+
+        if (!courses.length) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ message: "Unknown course code" }));
+          return;
+        }
+
+        await db.execute(
+          `INSERT INTO studieokter
+            (emne_id, opprettet_av, tittel, bygning,
+            maks_deltakere, dato, starttid)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            courses[0].id,
+            studentId,
+            data.get("tittel") ?? data.get("title"),
+            data.get("bygning") ?? data.get("buildingName"),
+            data.get("maks_deltakere") ?? data.get("capacity"),
+            data.get("dato") ?? data.get("date"),
+            data.get("starttid") ?? data.get("start")
+          ]
+        );
+
+        res.writeHead(201, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "Studieøkt lagret!" }));
+      } catch (err) {
+        console.error(err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "Could not save session" }));
+      }
+    });
+
+    return;
+  }
+
+
   if (req.method == 'POST' && req.url === '/api/auth/register'){   //checks that the form reaches the route
     let body = '';
 
@@ -130,7 +184,8 @@ const server = http.createServer((req, res) => {
 
       res.writeHead(200, {'Content-Type' : 'application/json'});
       res.end(JSON.stringify({
-        message: `Velkommen, ${user.username}! Du er logget inn!`
+        message: `Velkommen, ${user.username}! Du er logget inn!`,
+        userId: user.id
     }));
   } catch (err) {
     console.error('login failed:', err);

@@ -86,6 +86,11 @@ authForm.addEventListener('submit', async (event) => {
     });
 
     const result = await response.json();
+
+    if (response.ok && mode === "login") {
+        localStorage.setItem("userId", result.userId);
+    }
+
     navMessage.textContent = result.message;
 
     if (response.ok && mode === 'login') {

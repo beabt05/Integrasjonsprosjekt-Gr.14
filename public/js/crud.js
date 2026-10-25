@@ -39,6 +39,32 @@ submit_btn.addEventListener("click", function (e) {
       editRow = null;
       submit_btn.innerText = "send inn";
    } else {
+
+      fetch("/api/studieokter", {
+      method: "POST",
+      body: new URLSearchParams({
+         title: sessionTitel.value,
+         start: sessionStart.value,
+         capacity: sessionCapacity.value,
+         date: sessionDate.value,
+         courseCode: courseCode.value,
+         buildingName: buildingName.value
+      })
+   })
+   .then(response => {
+      if (!response.ok) {
+         throw new Error("Could not save the session");
+      }
+      return response.text();
+      //return response.json();
+   })
+   .then(data => {
+      console.log("Session saved:", data);
+   })
+   .catch(error => {
+      console.error(error);
+   });   
+
       addSessionDOM(values);
    }
 
@@ -49,6 +75,10 @@ submit_btn.addEventListener("click", function (e) {
    courseCode.value = "";
    buildingName.value = "";
 });
+
+
+
+
 
 // Create a car
 
