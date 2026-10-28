@@ -41,6 +41,12 @@ const toLogin = document.querySelector('#navToLogin');
 const navMessage = document.querySelector('#navAuthMessage');
 const usernameInput = document.querySelector('#navUsername');
 const passwordInput = document.querySelector('#navPassword');
+const navButtons = document.querySelectorAll('nav button')
+const sections = document.querySelectorAll('#appFrame section')
+const headerTitle = document.getElementById('headerTitle');
+const headerIcon = document.getElementById('headerIcon');
+const newSessionBtn = document.getElementById('newSessionBtn');
+const sessionForm = document.getElementById('contact');
 
 usernameInput.hidden = true;
 usernameInput.disabled = true;
@@ -99,6 +105,26 @@ authForm.addEventListener('submit', async (event) => {
 
 const authModal = document.querySelector("#authModal");
 const mainScreen = document.querySelector("#mainScreen");
+
+navButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    sections.forEach(section => {
+      section.hidden = true;
+    });
+
+    document.getElementById(button.dataset.target).hidden = false;
+
+    headerTitle.textContent = button.dataset.title;
+    headerIcon.src = button.querySelector('img').src;
+
+    navButtons.forEach(b => b.classList.remove('active'));
+    button.classList.add('active');
+  });
+});
+
+newSessionBtn.addEventListener('click', () => {
+  sessionForm.hidden = !sessionForm.hidden;
+});
 
 authModal.showModal();
 

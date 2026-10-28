@@ -69,7 +69,23 @@ provide the shared Codespaces configuration.
 
 <main id="mainScreen" hidden>
 <div class="container" id="appFrame">
-  <form id="contact" hidden>
+
+  <button type="button" class="btn btn-sm" id="clearAll" name="button" hidden>clear all</button>
+  <header>
+    <h2 id="headerTitleWrap">
+    <img id="headerIcon" src="images/homebutton.png" alt="" width="32" height="32">
+    <span id="headerTitle">Home</span>
+    </h2>
+    <img id="headerAvatar" src="images/profilepicturelogo.png" alt="Profil" width="40" height="40">
+</header>
+  <section id="homesection"></section>
+  <div id="activeSessions">
+  </div>
+  <div id="upcomingSessions">
+  </div>
+  <section id="sessionssection" hidden>
+    <button type="button" id="newSessionBtn">New Session</button>
+    <form id="contact" hidden>
     <h1>Study Buddy</h1>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
@@ -108,29 +124,19 @@ provide the shared Codespaces configuration.
     </fieldset>
     <p id="session-message" role="status"></p>
     <div id="session-list"></div>
-  </form>
+    </form>
+  </section>
+  <section id="settingssection" hidden>
 
-  <button type="button" class="btn btn-sm" id="clearAll" name="button" hidden>clear all</button>
-  <header>
-    <img src="images/homebutton.png" alt="" width="40" height="40">
-    <h2>Home</h2>
-    <img id="profilepic" src="images/profilepicturelogo.png" alt="" width="40" height="40">
-  </header>
-  <section id="homesection"></section>
-  <div id="activeSessions">
-  </div>
-  <div id="upcomingSessions">
-  </div>
-  <section id="sessionssection" hidden>Sessions</section>
-  <section id="settingssection" hidden>Settings</section>
+  </section>
   <nav>
-    <button data-target="homesection">
+    <button data-target="homesection" data-title="Home">
       <img src="images/homebutton.png" alt="Home" width="48" height="48">
     </button>
-    <button data-target="sessionssection">
+    <button data-target="sessionssection" data-title="Sessions">
       <img src="images/sessionslogov2.png" alt="Sessions" width="48" height="48">
     </button>
-    <button data-target="settingssection">
+    <button data-target="settingssection" data-title="Settings">
       <img src="images/settingslogo.png" alt="Settings" width="48" height="48">
     </button>
   </nav>

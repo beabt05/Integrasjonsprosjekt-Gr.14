@@ -86,11 +86,23 @@ header h2 {
   margin-right: 5px;
 }
 
-header img{
-  grid-column: 1;
+header img { grid-column: auto; }   /* remove or replace the old header img rule */
+
+#headerAvatar {
+  grid-column: 3;
   justify-self: end;
-  margin-right: 5px;
+  border: solid 1px;
+  border-radius: 50%;
+  object-fit: cover;
 }
+
+#headerTitleWrap {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .container {
   min-width: 296px;
   max-width: 400px;
@@ -100,6 +112,10 @@ header img{
   background-color: white;
 }
 
+nav button.active {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
 
 #appFrame {
   display: flex;
