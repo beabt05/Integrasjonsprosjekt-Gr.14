@@ -77,10 +77,6 @@ submit_btn.addEventListener("click", function (e) {
    buildingName.value = "";
 });
 
-
-
-
-
 // Create a car
 
 function addSessionDOM(values) {
