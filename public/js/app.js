@@ -31,8 +31,21 @@ form.addEventListener("submit", function(event){
         body: new URLSearchParams({ name: name, email: email, password: password })
     })
 
+    
     .then(response => response.text())
         .then(text => {
             // The response can be used to show a success or error message to the user.
         })
+
+
+    
+
+    
+
  });
+
+
+
+
+
+
