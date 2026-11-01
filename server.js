@@ -93,6 +93,19 @@ const server = http.createServer((req, res) => {
           }));
           return;
         }
+         
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-z0-9-]+\.)*ntnu\.no$/i;
+
+        if (!emailRegex.test(email.trim())) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+                message: 'Du må bruke en gyldig NTNU e-postadresse.'
+            }));
+            return;
+          }
+
+
+
           const salt = crypto.randomBytes(16).toString('hex');
           const derivedKey = await scrypt(password, salt, 64);
           const passwordHash = salt + ':' + derivedKey.toString('hex');
@@ -107,12 +120,19 @@ const server = http.createServer((req, res) => {
           }));
 
 
-        } catch (err) { console.error('registration failed:', err);
-          res.writeHead(400, {'Content-Type': 'application/json'});
-          res.end(JSON.stringify({
-            message:'Ugyldige data'
-          }));
-        }
+        } catch (err) {
+                  console.error('REGISTRATION ERROR:', err);
+
+                  res.writeHead(500, {
+                      'Content-Type': 'application/json'
+                  });
+
+                  res.end(JSON.stringify({
+                      message: 'Registration failed',
+                      error: err.message
+                  }));
+              }
+       
         });
 
         return;

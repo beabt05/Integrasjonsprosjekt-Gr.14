@@ -308,7 +308,7 @@ a {
   max-height: 80dvh;
   overflow-y: auto;
 }
-#authModal .container {
+#authModal .container {public/js/crud.js
   padding-bottom: 24px;
   box-sizing: border-box;
 }

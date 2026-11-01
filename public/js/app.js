@@ -8,12 +8,18 @@ form.addEventListener("submit", function(event){
 
     const name = document.getElementById("name").value.trim()
     const email = document.getElementById("email").value.trim()
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-z0-9-]+\.)*ntnu\.no$/i;  //Regex handles email validation for active ntnu students (those holding an .ntnu account) 
     const role = document.getElementById("role").value;
     const password = document.getElementById("password").value
 
     // Basic validation so the API only receives usable account information.
     if (name.length < 2) {
         message.textContent = "Please enter a valid name.";
+        return;
+    }
+
+      if (!emailRegex.test(email)) {
+        message.textContent = "Please enter a valid ntnu email.";
         return;
     }
 
@@ -25,17 +31,27 @@ form.addEventListener("submit", function(event){
         role: role
     };
 
+
     // Send the registration data to the backend endpoint for processing.
-    fetch("/register", {
+    fetch("/api/auth/register", {
         method: "POST",
-        body: new URLSearchParams({ name: name, email: email, password: password })
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({ username: name, email: email, password: password })
     })
 
     
-    .then(response => response.text())
-        .then(text => {
-            // The response can be used to show a success or error message to the user.
-        })
+    .then(response => response.json())
+    .then(data => {
+        message.textContent = data.message;
+    })
+
+    .catch(error => {
+        console.error("registration error:", error)
+    })
+
 
 
     
