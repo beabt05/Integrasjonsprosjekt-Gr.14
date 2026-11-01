@@ -41,8 +41,8 @@ const server = http.createServer((req, res) => {
         await db.execute(
           `INSERT INTO studieokter
             (emne_id, opprettet_av, tittel, bygning,
-            maks_deltakere, dato, starttid)
-          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            maks_deltakere, dato, starttid, sluttid)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             courses[0].id,
             studentId,
@@ -50,7 +50,8 @@ const server = http.createServer((req, res) => {
             data.get("bygning") ?? data.get("buildingName"),
             data.get("maks_deltakere") ?? data.get("capacity"),
             data.get("dato") ?? data.get("date"),
-            data.get("starttid") ?? data.get("start")
+            data.get("starttid") ?? data.get("start"),
+            data.get("sluttid") ?? data.get("end")
           ]
         );
 
@@ -226,7 +227,7 @@ return;
         });
     req.on('end', async () => {
       try{
-        const {emneID, opprettetAv, tittel, bygning, rom, maksDeltakere, dato, starttid} = JSON.parse(body)
+        const {emneID, opprettetAv, tittel, bygning, rom, maksDeltakere, dato, starttid, sluttid} = JSON.parse(body)
       } catch (err) {console.error('Session creation failed: ', err);
 
       }

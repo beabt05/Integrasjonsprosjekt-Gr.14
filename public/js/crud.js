@@ -1,6 +1,7 @@
 const sessionCard = document.querySelector("#sessionCard");
 const sessionTitel = document.querySelector("#session-titel");
 const sessionStart = document.querySelector("#session-start");
+const sessionEnd = document.querySelector("#session-end");
 const sessionCapacity = document.querySelector("#session-capacity");
 const sessionDate = document.querySelector("#session-date");
 const courseCode = document.querySelector("#course-code-num");
@@ -14,6 +15,7 @@ let editRow = null;
 const fields = [
    ["session-title", sessionTitel],
    ["session-start", sessionStart],
+   ["session-end", sessionEnd],
    ["session-capacity", sessionCapacity],
    ["session-date", sessionDate],
    ["course-code", courseCode], 
@@ -45,6 +47,7 @@ submit_btn.addEventListener("click", function (e) {
       body: new URLSearchParams({
          title: sessionTitel.value,
          start: sessionStart.value,
+         end: sessionEnd.value,
          capacity: sessionCapacity.value,
          date: sessionDate.value,
          courseCode: courseCode.value,
@@ -70,6 +73,7 @@ submit_btn.addEventListener("click", function (e) {
    }
 
    sessionTitel.value = "";
+   sessionStart.value = "";
    sessionStart.value = "";
    sessionCapacity.value = "";
    sessionDate.value = "";
@@ -105,6 +109,11 @@ function addSessionDOM(values) {
          <p>
             <strong>Starttid:</strong>
             <span class="session-start"></span>
+         </p>
+
+         <p>
+            <strong>Starttid:</strong>
+            <span class="session-end"></span>
          </p>
 
          <p>
