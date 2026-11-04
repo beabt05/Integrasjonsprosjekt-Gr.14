@@ -84,9 +84,17 @@ provide the shared Codespaces configuration.
   <div id="upcomingSessions">
   </div>
   <section id="sessionssection" hidden>
-    <button type="button" id="newSessionBtn">New Session</button>
+    <h3 class="section-title">Live Sessions</h3>
+
+  <select id="sessionFilter" class="filter-pill">
+    <option value="">Filter: Alle emner</option>
+  </select>
+
+  <p id="sessionNote" role="status"></p>
+  <div id="sessionList"></div>
+
+  <button type="button" id="newSessionBtn">+ New Session</button>
     <form id="contact" hidden>
-    <h1>Study Buddy</h1>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
       <input id="session-titel" name="tittel" placeholder="Tittel på studieøkten" type="text" maxlength="100" required autofocus>
@@ -117,7 +125,7 @@ provide the shared Codespaces configuration.
       <input id="bygningNo" class="bygning" placeholder="Bygning" type="text" maxlength="10">
     </fieldset>
     <fieldset>
-      <input name="rom" placeholder="Rom" type="text" maxlength="10">
+      <input id="roomNo" placeholder="Rom" type="text" maxlength="10">
     </fieldset>
     <fieldset>
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>

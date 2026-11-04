@@ -1,136 +1,79 @@
-const sessionCard = document.querySelector("#sessionCard");
 const sessionTitel = document.querySelector("#session-titel");
 const sessionStart = document.querySelector("#session-start");
 const sessionCapacity = document.querySelector("#session-capacity");
 const sessionDate = document.querySelector("#session-date");
 const courseCode = document.querySelector("#course-code-num");
-const submit_btn = document.getElementById("contact-submit");
 const buildingName = document.querySelector("#bygningNo");
+const roomNo = document.querySelector("#roomNo");
+const submit_btn = document.getElementById("contact-submit");
 
+let editing = null;   // the session object being edited, or null
 
-const clearAll_btn = document.getElementById("clearAll");
-let editRow = null;
-
-const fields = [
-   ["session-title", sessionTitel],
-   ["session-start", sessionStart],
-   ["session-capacity", sessionCapacity],
-   ["session-date", sessionDate],
-   ["course-code", courseCode], 
-   ["building-name", buildingName]
-];
-
-// Create or update a session
-submit_btn.addEventListener("click", function (e) {
-   e.preventDefault();
-
-   const values = fields.map(([className, input]) => input.value);
-
-   if (values.some(value => !value)) {
-      alert("Vennligst fyll ut alle påkrevde felt!");
-      return;
-   }
-
-   if (editRow) {
-      fields.forEach(([className], index) => {
-         editRow.querySelector("." + className).textContent = values[index];
-      });
-
-      editRow = null;
-      submit_btn.innerText = "send inn";
-   } else {
-      addSessionDOM(values);
-   }
-
-   sessionTitel.value = "";
-   sessionStart.value = "";
-   sessionCapacity.value = "";
-   sessionDate.value = "";
-   courseCode.value = "";
-   buildingName.value = "";
-});
-
-// Create a car
-
-function addSessionDOM(values) {
-   const studysession = document.createElement("div");
-   studysession.className = "container";
-
-   studysession.innerHTML = `
-      <article class="session-card" id="sessionItem">
-         <p class="item-session-date">
-            <strong></strong>
-            <span class="session-date"></span>
-         </p>
-         <h2 id="item-title" class="session-title"></h2>
-
-         <p>
-            <strong>Emne:</strong>
-            <span class="course-code"></span>
-         </p>
-         
-         <p>
-            
-            <span class="building-name"></span>
-         </p>
-         
-
-         <p>
-            <strong>Starttid:</strong>
-            <span class="session-start"></span>
-         </p>
-
-         <p>
-            <strong>Maks deltakere:</strong>
-            <span class="session-capacity"></span>
-         </p>
-
-         <div class="session-actions">
-            <button type="button" class="edit">edit</button>
-            <button type="button" class="remove">remove</button>
-         </div>
-      </article>
-   `;
-
-   fields.forEach(([className], index) => {
-      studysession.querySelector("." + className).textContent = values[index];
-   });
-
-   sessionCard.appendChild(studysession);
+function refreshList() {
+  allSessions = [...createdSessions, ...allSessions.filter(s => !createdSessions.includes(s))];
+  fillFilter();
+  showSessions();
 }
 
-// Edit or remove a card
-sessionCard.addEventListener("click", function (e) {
-   const button = e.target.closest("button");
-   if (!button) return;
+function clearForm() {
+  sessionForm.reset();
+  sessionCapacity.value = 3;
+  editing = null;
+  submit_btn.innerText = "send inn";
+}
 
-   const content = button.closest(".session-card");
-   if (!content) return;
+function startEdit(s) {
+  editing = s;
+  sessionTitel.value = s.tittel;
+  sessionStart.value = s.starttid;
+  sessionCapacity.value = s.ledigePlasser;
+  sessionDate.value = s.dato;
+  courseCode.value = s.emnekode;
+  buildingName.value = s.bygning || "";
+  roomNo.value = s.romnr || "";
+  submit_btn.innerText = "oppdater økt";
+  sessionForm.hidden = false;
+  sessionForm.scrollIntoView({ behavior: "smooth" });
+}
 
-   const studysession = content.parentElement;
+function removeSession(s) {
+  createdSessions = createdSessions.filter(x => x !== s);
+  allSessions = allSessions.filter(x => x !== s);
+  if (editing === s) clearForm();
+  refreshList();
+}
 
-   if (button.classList.contains("remove")) {
-      studysession.remove();
+submit_btn.addEventListener("click", function (e) {
+  e.preventDefault();
 
-      if (editRow === studysession) {
-         editRow = null;
-         submit_btn.innerText = "send inn";
-      }
-   } else if (button.classList.contains("edit")) {
-      editRow = studysession;
+  if (!sessionTitel.value || !sessionStart.value || !sessionCapacity.value ||
+      !sessionDate.value || !courseCode.value) {
+    alert("Vennligst fyll ut alle påkrevde felt!");
+    return;
+  }
 
-      fields.forEach(([className, input]) => {
-         input.value = content.querySelector("." + className).textContent;
-      });
+  const bygning = buildingName.value.trim();
+  const romnr = roomNo.value.trim();
+  const data = {
+    tittel: sessionTitel.value.trim(),
+    beskrivelse: "",
+    emnekode: courseCode.value,
+    host: "Du",
+    bygning,
+    romnr,
+    rom: `${bygning} ${romnr}`.trim(),
+    dato: sessionDate.value,
+    starttid: sessionStart.value,
+    ledigePlasser: Number(sessionCapacity.value) || 0
+  };
 
-      submit_btn.innerText = "oppdater økt";
-   }
-});
+  if (editing) {
+    Object.assign(editing, data);        // update in place
+  } else {
+    createdSessions.unshift({ id: Date.now(), ...data });
+  }
 
-// Clear all cards
-clearAll_btn.addEventListener("click", function (e) {
-   e.preventDefault();
-   sessionCard.innerHTML = "";
-   editRow = null;
-   submit_btn.innerText = "send inn";
+  clearForm();
+  sessionForm.hidden = true;
+  refreshList();
 });
