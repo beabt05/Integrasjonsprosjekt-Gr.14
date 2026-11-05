@@ -1,42 +1,41 @@
-require('dotenv').config()
+// Import the Node.js built-ins and libraries required for HTTP serving, file handling, crypto hashing and database work.
 const http = require('http')
 const path = require('path')
-const mysql = require('mysql2')
+const authController = require('./src/controllers/auth.controller')
 const fs = require('fs')
+const crypto = require('crypto')
+const { resourceUsage } = require('process')
 
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-})
 
-db.connect(err => {
-  if (err) {
-    console.error('Database connection failed:', err)
+// Create the main HTTP server. It handles API requests and serves static files from the public directory.
+const server = http.createServer((req, res) => {
+
+  // Handle the registration endpoint: validate input, hash the password, and save the user record.
+  if (req.method === 'POST' && req.url === '/api/auth/register') {
+    authController.register(req, res)
     return
   }
 
-  console.log('Connected to MySQL!')
-})
+  // Handle the login endpoint by delegating authentication to the controller layer.
+  if (req.method === 'POST' && req.url === '/api/auth/login') {
+    authController.login(req, res)
+    return
+  }
 
-const server = http.createServer((req, res) => {
-  //Build file path
-
+  // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,
     'public',
     req.url === '/' ? 'index.html' : req.url
   )
 
-  // Extension of file
-
+  // Extract the file extension so the response can advertise the proper MIME type.
   let extname = path.extname(filePath)
 
-  // Iniial content type
+  // Default to HTML unless the file is a script, stylesheet, JSON payload, or image.
   let contentType = 'text/html'
 
-  // Check ext and set content type
+  // Map common file types to their content type so browsers render them correctly.
   switch (extname) {
     case '.js':
       contentType = 'text/javascript'
@@ -55,12 +54,11 @@ const server = http.createServer((req, res) => {
       break
   }
 
-  // Use Node's file system module to read the file located at filePath.
-
+  // Read the requested file from disk and serve it back to the client.
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code == 'ENOENT') {
-        // Page not found
+        // If the page or asset does not exist, serve the custom 404 page instead of failing silently.
         fs.readFile(
           path.join(__dirname, 'public', '404.html'),
           (err, content) => {
@@ -69,18 +67,19 @@ const server = http.createServer((req, res) => {
           }
         )
       } else {
-        // Some server error
+        // Any other file read error is treated as a server-side issue.
         res.writeHead(500)
         res.end(`Server Error: ${err.code}`)
       }
     } else {
-      // Success
+      // Serve the file with the detected MIME type and UTF-8 encoding for text-based resources.
       res.writeHead(200, { 'Content-Type': contentType })
       res.end(content, 'utf8')
     }
   })
 })
 
+// Listen on the configured port or default to 3000 when no environment variable is provided.
 const PORT = process.env.PORT || 3000
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`))
