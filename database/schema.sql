@@ -6,15 +6,13 @@ CREATE DATABASE IF NOT EXISTS study_buddy
 USE study_buddy;
 
 DROP VIEW IF EXISTS registrerte_brukere;
-DROP TABLE IF EXISTS deltakere;
-DROP TABLE IF EXISTS studieokter;
 DROP TABLE IF EXISTS emner;
 DROP TABLE IF EXISTS studenter;
 
 -- Nye studenter/brukere
 CREATE TABLE studenter (
   id          INT AUTO_INCREMENT PRIMARY KEY,
-  brukernavn  VARCHAR(50)  NOT NULL,
+  brukernavn  VARCHAR(50)  NOT NULL UNIQUE,
   epost       VARCHAR(255) NOT NULL UNIQUE,
   passord     VARCHAR(255) NOT NULL,
   rolle       ENUM('student', 'admin') NOT NULL DEFAULT 'student',
@@ -36,27 +34,3 @@ CREATE TABLE emner (
 CREATE VIEW registrerte_brukere AS
   SELECT id, brukernavn, epost, rolle, opprettet
   FROM studenter;
-
-CREATE TABLE studieokter (
-  id       INT AUTO_INCREMENT PRIMARY KEY,
-  emne_id  INT NOT NULL,
-  opprettet_av INT NOT NULL,
-  tittel    VARCHAR(100) NOT NULL,
-  bygning   VARCHAR(10),
-  rom       VARCHAR(10),
-  maks_deltakere  INT NOT NULL DEFAULT 3,
-  dato      DATE NOT NULL,
-  starttid  TIME NOT NULL,
-  opprettet TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (emne_id)   REFERENCES emner(id),
-  FOREIGN KEY (opprettet_av) REFERENCES studenter(id) ON DELETE CASCADE
-);
-
-CREATE TABLE deltakere (
-  okt_id      INT NOT NULL,
-  student_id  INT NOT NULL,
-  ble_med     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (okt_id, student_id), 
-  FOREIGN KEY (okt_id) REFERENCES studieokter(id) ON DELETE CASCADE,
-  FOREIGN KEY (student_id) REFERENCES studenter(id) ON DELETE CASCADE
-);
