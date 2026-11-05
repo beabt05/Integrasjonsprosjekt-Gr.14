@@ -113,6 +113,15 @@ console.log("Login response:", result);
 }
 });
 
+document.getElementById('logoutLink').addEventListener('click', (event) => {
+  event.preventDefault();
+
+  localStorage.removeItem('userId');
+  localStorage.removeItem('username');
+
+  window.location.reload();
+});
+
 const authModal = document.querySelector("#authModal");
 const mainScreen = document.querySelector("#mainScreen");
 

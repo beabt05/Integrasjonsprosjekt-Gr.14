@@ -11,7 +11,7 @@ body {
     font-family:Arial, Helvetica, sans-serif;
     background: rgb(191, 194, 193);
     color: black;
-	padding-bottom: calc(72px + env(safe-area-inset-bottom));
+	  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 @font-face {
@@ -320,3 +320,43 @@ a {
   display: none !important;
 }
 
+
+#Infobttn {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+nav {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  background-color: wheat;
+  border-top: solid 0.5px lightgray;
+  z-index: 1000;
+}
+
+nav button {
+  background: none;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+
+#profilepic {
+    border: solid 1px;
+    border-radius: 50%;
+    object-fit: cover;
+    grid-column: 3;
+    justify-self: end;
+    margin-right: 5px;
+  }
+
+
+  header img{
+  grid-column: 1;
+  justify-self: end;
+  margin-right: 5px;
+}

@@ -54,8 +54,15 @@ provide the shared Codespaces configuration.
 
 <main id="mainScreen" hidden>
   <p id="navAuthMessage" role="status"></p>
-  <p id="welcomeMessage"></p>
+  
+
 <div class="container">
+  <section id="home">
+    <header>
+    <img src="images/homebutton.png" alt="" width="40" height="40">
+    <h2>Home</h2>
+    <img id="profilepic" src="images/profilepicturelogo.png" alt="" width="40" height="40"><li id="welcomeMessage"></li>
+  </header></section>
   <form id="contact">
     <h1>Study Buddy</h1>
     <h4>Arranger en studieøkt</h4>
@@ -135,21 +142,46 @@ provide the shared Codespaces configuration.
 </form>
 <p id="message"></p>
 
+<section id="study-sessions">
+  ...
 
 <!-- Session Card-->
 
 <div id="sessionCard"></div>
 
+</section>
 
-
-</div>
+<section id="settings"></section>
  
+
+<section id="info">
 <div class="container">
       <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
     <img id="node" src="images/node-icon.png" alt="JS icon">
     <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
         Node er en JavaScript-plattform som vanligvis brukes til å kjøre JavaScript på servere.<p>
 </div>
+</section>
+<!--
+ <nav>
+    <button data-target="homesection">
+      <img src="images/homebutton.png" alt="Home" width="48" height="48">
+    </button>
+    <button data-target="sessionssection">
+      <img src="images/sessionslogov2.png" alt="Sessions" width="48" height="48">
+    </button>
+    <button data-target="settingssection">
+      <img src="images/settingslogo.png" alt="Settings" width="48" height="48">
+    </button>
+  </nav>
+-->
+   <nav>
+      <a href="#home"><img src="images/homebutton.png" alt="Home" width="48" height="48"></a>
+      <a href="#study-sessions"><img src="images/sessionslogov2.png" alt="Sessions" width="48" height="48"></a>
+      <a href="#settings"><img src="images/settingslogo.png" alt="Settings" width="48" height="48"></a>
+      <a href="#" class="btn btn-link text-danger" id="logoutLink"width="48" height="48">Logout</a>
+  </nav>
+
 </main>
   
 
