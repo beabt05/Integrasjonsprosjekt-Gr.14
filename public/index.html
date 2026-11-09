@@ -151,6 +151,57 @@ provide the shared Codespaces configuration.
 
 </section>
 
+
+<div class="container">
+<div id="kurs_preview"></div>
+<form id="kursansvarlig">
+    <h4>Opprette et kurs (ADMIN) (ENGELSK/NORSK)</h4>
+    <fieldset>
+      <input id="kurs_navn" name="navn_no" placeholder="Tittel på kurs" type="text" maxlength="100" required autofocus>
+      <input type="hidden" id="kurs_navn_en" name="navn_en" value="Name of the class">
+    </fieldset>
+      <fieldset>
+      <select id="course-code-num" name="emne-kode" required> 
+        <option value="IDG2052">IDG2052</option>
+        <option value="IDATG2208">IDATG2208</option>
+        <option value="IDATG2102">IDATG2102</option>
+        <option value="IDG1292">IDG1292</option>
+      </select>
+
+      <label for="beskrivelse">Beskrivelse (norsk)</label>
+      <textarea
+        id="beskrivelse_no"
+        name="beskrivelse_no"
+        rows="4"
+        placeholder="Beskriv kort hva kurset omfatter."
+      ></textarea>
+
+       <label for="beskrivelse">Description (english)</label>
+      <textarea
+        type="hidden"
+        id="beskrivelse_en"
+        name="beskrivelse_en"
+        rows="4"
+        placeholder="Describe what the course is about"
+      ></textarea>
+    
+      <div>
+        <label for="session-capacity">Maks deltakere</label></div>
+
+      <div>
+        <input id="session-capacity" name="maks_deltakere" type="number" min="1" value="3" required>
+      </div>
+
+
+
+      <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
+    </fieldset>
+    <p id="session-message" role="status"></p>
+    <div id="session-list"></div>
+  </form>
+</section>
+</div> 
+
 <section id="settings"></section>
  
 
