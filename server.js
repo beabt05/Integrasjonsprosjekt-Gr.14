@@ -12,7 +12,104 @@ db.execute('SELECT DATABASE() AS db_name, @@hostname AS db_server')
   .catch(console.error);
 
 
-const server = http.createServer((req, res) => {   
+const server = http.createServer(async(req, res) => {  
+  console.log('Incoming request:', req.method, req.url);
+
+  if (req.method === 'POST' && req.url === '/api/emner') {
+  let body = '';
+
+  req.on('data', (chunk) => {
+    body += chunk;
+  });
+
+  req.on('end', async () => {
+    const sendJson = (status, message) => {
+      res.writeHead(status, {
+        'Content-Type': 'application/json; charset=utf-8'
+      });
+      res.end(JSON.stringify({ message }));
+    };
+
+    let kurs;
+
+    try {
+      kurs = JSON.parse(body);
+    } catch {
+      return sendJson(400, 'Ugyldig JSON.');
+    }
+
+    const {
+      emnekode,
+      navn_no,
+      navn_en,
+      beskrivelse_no,
+      beskrivelse_en
+    } = kurs ?? {};
+
+    if (
+      typeof emnekode !== 'string' ||
+      !emnekode.trim() ||
+      typeof navn_no !== 'string' ||
+      !navn_no.trim() ||
+      navn_no.trim().length > 100
+    
+    ) {
+      return sendJson(400, 'Oppgi emnekode og gyldig emnenavn');
+    }
+
+    try {
+      await db.execute(
+        `INSERT INTO emner
+          (emnekode, navn_no, navn_en, beskrivelse_no, beskrivelse_en)
+         VALUES (?, ?, ?, ?, ?)`,
+        [
+          emnekode.trim(),
+          navn_no.trim(),
+          typeof navn_en === 'string' ? navn_en.trim() : '',
+          typeof beskrivelse_no === 'string' ? beskrivelse_no.trim() : '',
+          typeof beskrivelse_en === 'string' ? beskrivelse_en.trim() : '',
+          
+        ]
+      );
+
+      return sendJson(201, 'Emnet er opprettet.');
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY') {
+        return sendJson(409, 'Emnekoden finnes allerede.');
+      }
+
+      console.error('Feil ved oppretting av emne:', error);
+      return sendJson(500, 'Kunne ikke opprette emnet.');
+    }
+  });
+
+  return;
+}
+  
+  if (req.method === 'GET' && req.url === '/api/emner') {
+    console.log('GET /api/emner reached');
+    try {
+      const [emner] = await db.execute(
+        'SELECT emnekode FROM emner ORDER BY emnekode'
+      );
+      console.log('Query result:', emner);
+      res.writeHead(200, {
+        'Content-Type': 'application/json; charset=utf-8'
+      });
+      res.end(JSON.stringify(emner));
+    } catch (error) {
+      console.error('Kunne ikke hente emner:', error);
+      res.writeHead(500, {
+        'Content-Type': 'application/json; charset=utf-8'
+      });
+      res.end(JSON.stringify({ message: 'Kunne ikke hente emner.' }));
+    }
+
+    return;
+  }
+
+
+  
   if (req.method === "POST" && req.url === "/api/studieokter") {
     let body = "";
 

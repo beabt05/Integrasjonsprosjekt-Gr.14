@@ -126,3 +126,67 @@ const authModal = document.querySelector("#authModal");
 const mainScreen = document.querySelector("#mainScreen");
 
 authModal.showModal();
+
+const sessionCourseSelect = document.getElementById('course-code');
+
+async function loadSessionCourses() {
+  try{
+    const response = await fetch('/api/emner');
+    if (!response.ok) throw new Error('Kunne ikke hente emner.');
+
+    const emner = await response.json();
+    const selectedCode = sessionCourseSelect.value;
+
+    sessionCourseSelect.replaceChildren(new Option('Velg emne', ''));
+
+    for (const { emnekode } of emner) {
+      sessionCourseSelect.add(new Option(emnekode, emnekode));
+    }
+
+    if (emner.some(({emnekode})=> emnekode === selectedCode)) {
+      sessionCourseSelect.value = selectedCode;
+    }
+
+  } catch (error) {
+    console.error(error);
+    if (sessionCourseSelect.options.length == 0) {
+      sessionCourseSelect.addEventListener(new Option('Kunne ikke hente emner', ''));
+    }
+  }
+}
+
+loadSessionCourses();
+
+const courseName = document.querySelector("#kurs_navn");
+const courseForm = document.querySelector("#kursansvarlig");
+
+courseForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const data = new FormData(courseForm);
+  const course = {
+    emnekode: data.get("emne-kode"),
+    navn_no: courseName.value.trim(),
+    navn_en: data.get("navn_en"),
+    beskrivelse_no: data.get("beskrivelse_no"),
+    beskrivelse_en: data.get("beskrivelse_en")
+  };
+
+  try {
+    const response = await fetch("/api/emner", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(course)
+    });
+
+    const result = await response.json();
+    alert(result.message);
+
+    if (response.ok) {
+      await loadSessionCourses();
+    }
+  } catch (error) {
+    console.error("Feil ved lagring av emne:", error);
+    alert("Kunne ikke lagre emnet.");
+  }
+});

@@ -88,11 +88,8 @@ provide the shared Codespaces configuration.
       <input id="session-date" name="dato" type="date" required>
     </fieldset>
     <fieldset>
-      <select id="course-code-num" name="course-code" required>
-        <option value="" disabled selected>Emne kode og kurs navn</option>
-        <option value="IDG2052">IDG2052 Programmering</option>
-        <option value="IDATG2208">IDATG2208 Machine Learning</option>
-        <option value="IDATG2102">IDATG2102 Alogrithmic Methods</option>
+      <select id="course-code" name="courseCode" required>
+       <option value="" disabled selected>Laster emner …</option>
       </select>
     </fieldset>
     <fieldset>
@@ -178,29 +175,24 @@ provide the shared Codespaces configuration.
 
        <label for="beskrivelse">Description (english)</label>
       <textarea
-        type="hidden"
         id="beskrivelse_en"
         name="beskrivelse_en"
         rows="4"
         placeholder="Describe what the course is about"
       ></textarea>
     
-      <div>
-        <label for="session-capacity">Maks deltakere</label></div>
-
-      <div>
-        <input id="session-capacity" name="maks_deltakere" type="number" min="1" value="3" required>
-      </div>
+      <p>Maks deltakere: 12</p>
 
 
 
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
     </fieldset>
-    <p id="session-message" role="status"></p>
-    <div id="session-list"></div>
+
   </form>
+
 </section>
-</div> 
+</div>     <p id="session-message" role="status"></p>
+    <div id="session-list"></div>
 
 <section id="settings"></section>
  

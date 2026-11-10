@@ -86,6 +86,10 @@ li {
 	margin:16px 0;
 }
 
+ #kursansvarlig {
+	background:#b3f3eb;
+}
+
 #contact h3, #kursansvarlig h3 {
 	color: #F96;
 	display: block;
