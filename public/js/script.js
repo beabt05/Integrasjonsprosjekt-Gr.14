@@ -32,7 +32,7 @@ const toLogin = document.querySelector('#navToLogin');
 const navMessage = document.querySelector('#navAuthMessage');
 const usernameInput = document.querySelector('#navUsername');
 const passwordInput = document.querySelector('#navPassword');
-const navButtons = document.querySelectorAll('nav button');
+const navButtons = document.querySelectorAll('nav button[data-target]');
 const sections = document.querySelectorAll('#appFrame section');
 const headerTitle = document.getElementById('headerTitle');
 const headerIcon = document.getElementById('headerIcon');
@@ -72,12 +72,10 @@ toLogin.addEventListener('click', () => {
   navMessage.textContent = '';
 });
 
-/*
 authForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  const { username, email, password } =
-  Object.fromEntries(new FormData(authForm));
+  const { username, email, password } = Object.fromEntries(new FormData(authForm));
 
   try {
     const response = await fetch(`/api/auth/${mode}`, {
@@ -85,18 +83,34 @@ authForm.addEventListener('submit', async (event) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password })
     });
-
     const result = await response.json();
     navMessage.textContent = result.message;
 
     if (response.ok && mode === 'login') {
-     // window.location.href = '/index.html';
+      if (result.username) localStorage.setItem('username', result.username);
+      if (result.userId) localStorage.setItem('userId', result.userId);
+
+      const welcome = document.getElementById('welcomeMessage');
+      if (welcome && result.username) welcome.textContent = `Velkommen, ${result.username}!`;
+
+      mainScreen.hidden = false;
+      authModal.close();
     }
-  } catch {
+  } catch (err) {
+    console.error('Login error:', err);
     navMessage.textContent = 'Kunne ikke koble opp til serveren.';
   }
 });
-*/
+
+const logoutLink = document.getElementById('logoutLink');
+if (logoutLink) {
+  logoutLink.addEventListener('click', event => {
+    event.preventDefault();
+    localStorage.removeItem('userId');
+    localStorage.removeItem('username');
+    window.location.reload();
+  });
+}
 
 const authModal = document.querySelector("#authModal");
 const mainScreen = document.querySelector("#mainScreen");
