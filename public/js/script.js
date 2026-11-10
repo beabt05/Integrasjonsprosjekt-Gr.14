@@ -141,14 +141,6 @@ newSessionBtn.addEventListener('click', () => {
 
 authModal.showModal();
 
-authForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  // TEMP: Frontend preview only. No server request or authentication.
-  // Restore backend authentication before using real accounts.
-  mainScreen.hidden = false;
-  authModal.close();
-});
 
 // ---------- Study sessions list ----------
 
