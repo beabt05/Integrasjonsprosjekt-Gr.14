@@ -3,6 +3,7 @@ const http = require('http')
 const path = require('path')
 const authController = require('./src/controllers/auth.controller')
 const courseController = require('./src/controllers/course.controller')
+const sessionsController = require('./src/controllers/sessions.controller')
 const fs = require('fs')
 const crypto = require('crypto')
 const { resourceUsage } = require('process')
@@ -31,10 +32,10 @@ const server = http.createServer((req, res) => {
 
   // Handle the sessions endpoint
   if (req.method === 'GET' && req.url === '/api/sessions') {
-    sessionsController.getSessions(req, res)
-    return
+  sessionsController.getSessions(req, res)
+  return
   }
-  
+
   // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,
