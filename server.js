@@ -2,6 +2,7 @@
 const http = require('http')
 const path = require('path')
 const authController = require('./src/controllers/auth.controller')
+const courseController = require('./src/controllers/course.controller')
 const fs = require('fs')
 const crypto = require('crypto')
 const { resourceUsage } = require('process')
@@ -22,6 +23,11 @@ const server = http.createServer((req, res) => {
     return
   }
 
+  // Handle the courses endpoint
+  if (req.method === 'GET' && req.url === '/api/courses') {
+  courseController.getCourses(req, res)
+  return
+  }
   // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,

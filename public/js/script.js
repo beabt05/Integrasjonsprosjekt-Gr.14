@@ -1,29 +1,13 @@
-const courses = [
-  {
-    code: "IDG2052",
-    name: { en: "Programming", no: "Programmering" },
-    description: {
-      en: "A relaxed and friendly study group for anyone interested in programming.",
-      no: "En avslappet og hyggelig kollokviegruppe for alle som er interessert i programmering."
-    }
-  },
-  {
-    code: "IDATG2208",
-    name: { en: "Machine Learning", no: "Maskinlæring" },
-    description: {
-      en: "A relaxed and friendly study group for anyone interested in machine learning.",
-      no: "En avslappet og hyggelig kollokviegruppe for alle som er interessert i maskinlæring."
-    }
-  },
-  {
-    code: "IDATG2102",
-    name: { en: "Algorithmic Methods", no: "Algoritmiske metoder" },
-    description: {
-      en: "A relaxed and friendly study group for anyone interested in algorithms.",
-      no: "En avslappet og hyggelig kollokviegruppe for alle som er interessert i algoritmer."
-    }
+async function loadCourses() {
+  try {
+    const res = await fetch('/api/courses');
+    if (!res.ok) throw new Error('bad response');
+    return await res.json();
+  } catch {
+    return courses
   }
-];
+}
+
 
 const authForm = document.querySelector('#navAuthForm');
 const submitButton = document.querySelector('#navAuthBtn');
@@ -41,6 +25,7 @@ const sessionForm = document.getElementById('contact');
 const sessionList = document.getElementById('sessionList');
 const sessionFilter = document.getElementById('sessionFilter');
 const sessionNote = document.getElementById('sessionNote');
+const courseSelect = document.getElementById('course-code-num')
 
 usernameInput.hidden = true;
 usernameInput.disabled = true;
@@ -140,8 +125,6 @@ newSessionBtn.addEventListener('click', () => {
 });
 
 authModal.showModal();
-
-
 // ---------- Study sessions list ----------
 
 // Example data, used only if the server can't be reached
@@ -234,6 +217,26 @@ function fillFilter() {
   });
   sessionFilter.value = codes.includes(current) ? current : '';
 }
+
+async function fillCourses() {
+  let list;
+  try {
+    const res = await fetch('/api/courses');
+    if (!res.ok) throw new Error('bad response');
+    list = await res.json();
+  } catch {
+    list = courses.map(c => ({emnekode: c.code, navn_no: c.name.no}));
+  }
+
+  courseSelect.length = 1;
+  list.forEach(c => {
+    const opt = document.createElement('option')
+    opt.value = c.emnekode;
+    opt.textContent = `${c.emnekode} ${c.navn_no}`;
+    courseSelect.appendChild(opt);
+  });
+}
+fillCourses();
 
 function showSessions() {
   const code = sessionFilter.value;
