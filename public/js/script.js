@@ -105,6 +105,7 @@ console.log("Login response:", result);
 
   if (response.ok && mode === "login") {
       mainScreen.hidden = false;
+      updateAdminSection(result);
       authModal.close();
   }
   } catch (err) {
@@ -190,3 +191,7 @@ courseForm.addEventListener("submit", async (event) => {
     alert("Kunne ikke lagre emnet.");
   }
 });
+
+function updateAdminSection(user) {
+  document.getElementById('admin').hidden = user?.role !== 'admin';
+}

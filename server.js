@@ -15,6 +15,8 @@ db.execute('SELECT DATABASE() AS db_name, @@hostname AS db_server')
 const server = http.createServer(async(req, res) => {  
   console.log('Incoming request:', req.method, req.url);
 
+// course creation code.
+
   if (req.method === 'POST' && req.url === '/api/emner') {
   let body = '';
 
@@ -268,10 +270,15 @@ const server = http.createServer(async(req, res) => {
 
     // Read username and password
 
+    //const [users] = await db.execute(
+    //'SELECT id, brukernavn AS username, passord AS password_hash FROM studenter WHERE epost = ?',
+    //[email]
+    //);;
+
     const [users] = await db.execute(
-    'SELECT id, brukernavn AS username, passord AS password_hash FROM studenter WHERE epost = ?',
+    'SELECT id, brukernavn AS username, passord AS password_hash, rolle AS role FROM studenter WHERE epost = ?',
     [email]
-    );;
+  );
     
       // Find the user in the database  
     
@@ -304,7 +311,9 @@ const server = http.createServer(async(req, res) => {
       res.end(JSON.stringify({
         message: `Velkommen, ${user.username}! Du er logget inn!`,
         userId: user.id,
-        username: user.username
+        username: user.username,
+        role: user.role
+        
       }));
   } catch (err) {
     console.error('login failed:', err);
