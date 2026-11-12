@@ -28,6 +28,13 @@ const server = http.createServer((req, res) => {
   courseController.getCourses(req, res)
   return
   }
+
+  // Handle the sessions endpoint
+  if (req.method === 'GET' && req.url === '/api/sessions') {
+    sessionsController.getSessions(req, res)
+    return
+  }
+  
   // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,
