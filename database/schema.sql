@@ -46,6 +46,7 @@ rom       VARCHAR(10),
 maks_deltakere  INT NOT NULL DEFAULT 3,
 dato      DATE NOT NULL,
 starttid  TIME NOT NULL,
+sluttid   TIME NOT NULL,
 opprettet TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 FOREIGN KEY (emne_id)   REFERENCES emner(id),
 FOREIGN KEY (opprettet_av) REFERENCES studenter(id) ON DELETE CASCADE
