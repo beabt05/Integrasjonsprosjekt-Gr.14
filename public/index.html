@@ -101,6 +101,10 @@ provide the shared Codespaces configuration.
         <input id="session-start" name="starttid" type="time" required>
       </div>
       <div>
+        <label for="session-end">Sluttid</label>
+        <input id="session-end" name="sluttid" type="time" required>
+      </div>
+      <div>
         <label for="session-capacity">Maks deltakere</label>
         <input id="session-capacity" name="maks_deltakere" type="number" min="1" value="3" required>
       </div>
@@ -128,7 +132,16 @@ provide the shared Codespaces configuration.
     </form>
   </section>
   <section id="settingssection" hidden>
-
+    <form id="kursansvarlig" hidden>
+    <h4>Opprett nytt emne (admin)</h4>
+    <input name="emnekode" placeholder="Emnekode, f.eks. IDATG2102" type="text" maxlength="20" required>
+    <input name="navn_no" placeholder="Navn (norsk)" type="text" maxlength="100" required>
+    <input name="navn_en" placeholder="Name (English)" type="text" maxlength="100">
+    <textarea name="beskrivelse_no" placeholder="Beskrivelse (norsk)" rows="3"></textarea>
+    <textarea name="beskrivelse_en" placeholder="Description (English)" rows="3"></textarea>
+    <button type="submit">Opprett emne</button>
+    <p id="course-message" role="status"></p>
+  </form>
   </section>
   <nav>
     <button data-target="homesection" data-title="Home">

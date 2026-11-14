@@ -30,6 +30,11 @@ const server = http.createServer((req, res) => {
   return
   }
 
+  if (req.method === 'POST' && req.url === '/api/courses') {
+  courseController.createCourse(req, res)
+  return
+}
+
   // Handle the sessions endpoint
   if (req.method === 'GET' && req.url === '/api/sessions') {
   sessionsController.getSessions(req, res)

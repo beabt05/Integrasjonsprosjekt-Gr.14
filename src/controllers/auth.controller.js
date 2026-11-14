@@ -94,7 +94,7 @@ function login(req, res) {
 
       // Find the stored hash for the email address before verifying the submitted password.
       db.query(
-        'SELECT id, passord FROM studenter WHERE epost = ?',
+        'SELECT id, brukernavn, rolle, passord FROM studenter WHERE epost = ?',
         [email],
         (err, rows) => {
           if (err) {
@@ -122,7 +122,12 @@ function login(req, res) {
 
             if (match) {
               res.writeHead(200, {'Content-Type': 'application/json', 'Set-Cookie': 'sid=${token}; HttpOnly; SameSite=Lax; Path=/'})
-              res.end(JSON.stringify({message: 'Innlogging vellykket.'}))
+              res.end(JSON.stringify({
+              message: 'Innlogging vellykket.',
+              userId: rows[0].id,
+              username: rows[0].brukernavn,
+              role: rows[0].rolle
+              }))
               createSession(rows[0].id)
               return
             }

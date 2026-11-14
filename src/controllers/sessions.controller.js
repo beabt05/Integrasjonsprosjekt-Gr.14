@@ -2,7 +2,7 @@ const database = require('../config/db')
 
 function getSessions(req, res){
     database.query(
-        'SELECT id, emne_id, opprettet_av, tittel, bygning, rom, maks_deltakere, dato, starttid, slutttid, opprettet FROM studieokter',
+        'SELECT id, emne_id, opprettet_av, tittel, bygning, rom, maks_deltakere, dato, starttid, sluttid, opprettet FROM studieokter',
         (err, rows) => {
             if (err) {
                 console.error(err)

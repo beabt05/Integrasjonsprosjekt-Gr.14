@@ -26,6 +26,8 @@ const sessionList = document.getElementById('sessionList');
 const sessionFilter = document.getElementById('sessionFilter');
 const sessionNote = document.getElementById('sessionNote');
 const courseSelect = document.getElementById('course-code-num')
+const courseForm = document.getElementById('kursansvarlig');
+const courseMessage = document.getElementById('course-message');
 
 usernameInput.hidden = true;
 usernameInput.disabled = true;
@@ -267,5 +269,25 @@ async function loadSessions() {
   fillFilter();
   showSessions();
 }
+
+courseForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const course = Object.fromEntries(new FormData(courseForm));
+  try {
+    const response = await fetch('/api/courses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(course)
+    });
+    const result = await response.json();
+    courseMessage.textContent = result.message;
+    if (response.ok) {
+      courseForm.reset();
+      fillCourses();   // refresh the dropdown in the create-session form
+    }
+  } catch {
+    courseMessage.textContent = 'Kunne ikke koble opp til serveren.';
+  }
+});
 
 sessionFilter.addEventListener('change', showSessions);
