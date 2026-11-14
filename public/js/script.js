@@ -1,14 +1,3 @@
-async function loadCourses() {
-  try {
-    const res = await fetch('/api/courses');
-    if (!res.ok) throw new Error('bad response');
-    return await res.json();
-  } catch {
-    return courses
-  }
-}
-
-
 const authForm = document.querySelector('#navAuthForm');
 const submitButton = document.querySelector('#navAuthBtn');
 const toRegister = document.querySelector('#navToRegister');
@@ -79,6 +68,8 @@ authForm.addEventListener('submit', async (event) => {
 
       const welcome = document.getElementById('welcomeMessage');
       if (welcome && result.username) welcome.textContent = `Velkommen, ${result.username}!`;
+
+      courseForm.hidden = result.role !== 'admin';
 
       mainScreen.hidden = false;
       authModal.close();
@@ -227,7 +218,7 @@ async function fillCourses() {
     if (!res.ok) throw new Error('bad response');
     list = await res.json();
   } catch {
-    list = courses.map(c => ({emnekode: c.code, navn_no: c.name.no}));
+    list = [];
   }
 
   courseSelect.length = 1;

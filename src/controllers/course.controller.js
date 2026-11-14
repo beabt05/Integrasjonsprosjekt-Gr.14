@@ -40,7 +40,7 @@ function createCourse(req, res) {
       return send(400, 'Oppgi emnekode og gyldig emnenavn.')
     }
 
-    db.query(
+    database.query(
       'INSERT INTO emner (emnekode, navn_no, navn_en, beskrivelse_no, beskrivelse_en) VALUES (?, ?, ?, ?, ?)',
       [emnekode, navnNo, text(data.navn_en) || navnNo,
        text(data.beskrivelse_no), text(data.beskrivelse_en)],
