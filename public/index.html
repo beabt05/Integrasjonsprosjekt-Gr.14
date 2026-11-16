@@ -74,7 +74,12 @@ provide the shared Codespaces configuration.
     </h2>
     <img id="headerAvatar" src="images/profilepicturelogo.png" alt="Profil" width="40" height="40">
 </header>
-  <section id="homesection"></section>
+  <section id="homesection">
+  <p id="welcomeMessage" role="status"></p>
+
+    <img id="landing" src="images/study_buddy_1.png" style="display: block; margin-inline: auto;">
+</section>
+
   <div id="activeSessions">
   </div>
   <div id="upcomingSessions">
@@ -143,8 +148,8 @@ provide the shared Codespaces configuration.
     <form id="kursansvarlig" hidden>
     <h4>Opprett nytt emne (admin)</h4>
     <input name="emnekode" placeholder="Emnekode, f.eks. IDATG2102" type="text" maxlength="20" required>
-    <input name="navn_no" placeholder="Navn (norsk)" type="text" maxlength="100" required>
-    <input name="navn_en" placeholder="Name (English)" type="text" maxlength="100">
+    <input name="navn_no" placeholder="Kursnavn (norsk)" type="text" maxlength="100" required>
+    <input name="navn_en" placeholder="Course title (English)" type="text" maxlength="100">
     <textarea name="beskrivelse_no" placeholder="Beskrivelse (norsk)" rows="3"></textarea>
     <textarea name="beskrivelse_en" placeholder="Description (English)" rows="3"></textarea>
     <button type="submit">Opprett emne</button>
