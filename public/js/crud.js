@@ -58,7 +58,7 @@ submit_btn.addEventListener("click", function (e) {
     tittel: sessionTitel.value.trim(),
     beskrivelse: "",
     emnekode: courseCode.value,
-    host: "Du",
+    host: localStorage.getItem("username"),
     bygning,
     romnr,
     rom: `${bygning} ${romnr}`.trim(),
