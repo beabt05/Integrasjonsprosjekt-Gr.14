@@ -275,7 +275,7 @@ fieldset {
 
 /* ---------- Create-session form ---------- */
 
-#contact {
+#contact, #kursansvarlig {
   background: #f8f9fb;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -334,6 +334,29 @@ fieldset {
   filter: brightness(0.95);
 }
 
+#kursansvarlig button[type="submit"] {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#kursansvarlig button[type="submit"]:hover {
+  filter: brightness(0.95);
+}
+
+
+#welcomeMessage {
+font-size: 1.1rem;
+font-weight: 600;
+color: #EB5757;
+text-align:center;
+}
 /* ---------- Sessions tab ---------- */
 
 #sessionssection .section-title {
@@ -359,6 +382,16 @@ fieldset {
   text-align: center;
   color: var(--muted);
   font-size: 12px;
+}
+
+#sessionList {
+  margin-left: 20px;
+}
+
+
+#landing {
+  margin-top: 80px;
+ 
 }
 
 #newSessionBtn {
