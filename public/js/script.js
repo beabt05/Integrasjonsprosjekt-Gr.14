@@ -160,7 +160,7 @@ function renderSession(s) {
   row.append(
     cell(s.host, s.emnekode),
     cell(s.tittel, s.beskrivelse),
-    cell(s.starttid, `${s.ledigePlasser} ledige plasser`)
+    cell(`${s.starttid}-${s.sluttid}`, `${s.ledigePlasser} ledige plasser`)
   );
 
   // Extra info, shown when the card is clicked

@@ -41,6 +41,11 @@ const server = http.createServer((req, res) => {
   return
   }
 
+  if (req.method === 'POST' && req.url === '/api/sessions') {
+    sessionsController.createSessions(req,res)
+    return
+  }
+
   // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,

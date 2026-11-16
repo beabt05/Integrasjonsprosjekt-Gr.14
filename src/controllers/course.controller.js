@@ -18,12 +18,12 @@ function getCourses(req, res) {
 
 function createCourse(req, res) {
   let body = ''
-  req.on('data', chunk => { body += chunk })
+  req.on('data', chunk => {body += chunk})
 
   req.on('end', () => {
     const send = (status, message) => {
-      res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' })
-      res.end(JSON.stringify({ message }))
+      res.writeHead(status, {'Content-Type': 'application/json; charset=utf-8'})
+      res.end(JSON.stringify({message }))
     }
 
     let data
