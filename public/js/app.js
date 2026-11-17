@@ -8,6 +8,7 @@ form.addEventListener("submit", function(event){
 
     const name = document.getElementById("name").value.trim()
     const email = document.getElementById("email").value.trim()
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-z0-9-]+\.)*ntnu\.no$/i;  //Regex handles email validation for active ntnu students (those holding an .ntnu account) 
     const role = document.getElementById("role").value;
     const password = document.getElementById("password").value
 
@@ -16,6 +17,11 @@ form.addEventListener("submit", function(event){
         message.textContent = "Please enter a valid name.";
         return;
     }
+    
+      if (!emailRegex.test(email)) {
+        message.textContent = "Please enter a valid ntnu email.";
+        return;
+    }  
 
     // Package the data for the server as a single user object.
     const user = {
