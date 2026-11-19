@@ -1,72 +1,52 @@
-// Load environment variables from the local .env file so we can connect to the database and configure the server.
-require('dotenv').config()
+// Import the Node.js built-ins and libraries required for HTTP serving, file handling, crypto hashing and database work.
 const http = require('http')
 const path = require('path')
-const mysql = require('mysql2')
+const authController = require('./src/controllers/auth.controller')
+const courseController = require('./src/controllers/course.controller')
+const sessionsController = require('./src/controllers/sessions.controller')
 const fs = require('fs')
 const crypto = require('crypto')
+const { resourceUsage } = require('process')
 
-// Create a single MySQL connection for the app and reuse it for database queries.
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-})
 
-// Establish the database connection and log a clear error if initialization fails.
-db.connect(err => {
-  if (err) {
-    console.error('Database connection failed:', err)
-    return
-  }
-
-  console.log('Connected to MySQL!')
-})
-
-// Create the main HTTP server and handle both registration requests and static file delivery.
+// Create the main HTTP server. It handles API requests and serves static files from the public directory.
 const server = http.createServer((req, res) => {
 
-  // Handle new user registration submitted as form data.
+  // Handle the registration endpoint: validate input, hash the password, and save the user record.
   if (req.method === 'POST' && req.url === '/api/auth/register') {
-    let body = ''
-    req.on('data', chunk => {
-      body += chunk
-    })
-
-    req.on('end', ()=> {
-      let data
-      try {
-        data = JSON.parse(body)
-      } catch {
-        res.writeHead(400, {'Content-Type': 'application/json'})
-        res.end(JSON.stringify({message: 'Ugyldig data'}))
-        return
-      }
-      const {email, password} = data
-      if (!email || !password) {
-        res.writeHead(400, {'Content-Type': 'application/json'})
-        res.end(JSON.stringify({message: 'Epost og passord må fylles ut'}))
-        return
-      }
-      const salt = crypto.randomBytes(16).toString('hex')
-
-      crypto.scrypt(password, salt, 64, (err, derivedKey) => {
-        if (err) {
-          res.writeHead(500, { 'Content-Type': 'application/json'})
-          res.end(JSON.stringify({ message: 'Noe gikk galt.'}))
-          return
-        }
-
-        const hash = salt + ":" + derivedKey.toString('hex')
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ message: 'Bruker registrert: ' + email}))
-      })
-    })
+    authController.register(req, res)
     return
   }
 
-  // Build the correct file path for public assets and pages served from the /public folder.
+  // Handle the login endpoint by delegating authentication to the controller layer.
+  if (req.method === 'POST' && req.url === '/api/auth/login') {
+    authController.login(req, res)
+    return
+  }
+
+  // Handle the courses endpoint
+  if (req.method === 'GET' && req.url === '/api/courses') {
+  courseController.getCourses(req, res)
+  return
+  }
+
+  if (req.method === 'POST' && req.url === '/api/courses') {
+  courseController.createCourse(req, res)
+  return
+}
+
+  // Handle the sessions endpoint
+  if (req.method === 'GET' && req.url === '/api/sessions') {
+  sessionsController.getSessions(req, res)
+  return
+  }
+
+  if (req.method === 'POST' && req.url === '/api/sessions') {
+    sessionsController.createSessions(req,res)
+    return
+  }
+
+  // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,
     'public',

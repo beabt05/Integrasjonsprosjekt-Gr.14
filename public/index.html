@@ -1,33 +1,39 @@
+<!--
+Development/testing: https://improved-waffle-q6qrgjv4px92xxv4-3000.app.github.dev/
+The shared Codespaces URL works only while Art's Codespace and
+Node server (npm start) are running. If unavailable later, the
+demo may simply be offline.
+
+For independent development, set up your own Codespace or local
+environment using database/schema.sql and your own .env settings.
+.devcontainer/devcontainer.json and .devcontainer/docker-compose.yml
+provide the shared Codespaces configuration.
+-->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="UTF-8">
 
 <head>
-    <!-- Page metadata and styling for the landing page. -->
     <title>Form</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
 
 </head>
-<br>
-<br>
-    <!-- Main heading for the application landing page. -->
-    <h1>Study Buddy</h1>
-    
-    <!--<h3>Welcome to the landing page</h3>-->
-    <!-- Branding images that help identify the Node.js-based project. -->
-    <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
-    <img id="node" src="images/node-icon.png" alt="JS icon">
-    <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
-        Node er en JavaScript-plattform som vanligvis brukes til å kjøre JavaScript på servere.<p>
-    <!--<p class="para">This site is built entirely on Node.js and Node.js backend.
-        Node is a JavaScript platform typically used to run JavaScript on servers.<p>
-        --><body>
-<!-- Login form for existing users to sign in through the backend endpoint. -->
-<li class="nav-login">
-  <form class="nav-login-form" id="navAuthForm" method="POST" action="/register">
-    <input type="email" name="email" placeholder="Email"
-           required autocomplete="email">
 
+<body>
+<dialog id="authModal">
+<div class="container" id="authBar">
+<br>
+<h1>Study Buddy</h1>
+<br>
+<li class="nav-login">
+  <form class="nav-login-form" id="navAuthForm">
+    <input type="text" name="username" id="navUsername"
+       placeholder="Brukernavn" autocomplete="username"
+       minlength="2" maxlength="50" hidden disabled>
+    <input type="email" name="email" id="navEmail"
+       placeholder="E-postadresse" required autocomplete="email">
     <input type="password" name="password" id="navPassword"
            placeholder="Passord" required autocomplete="current-password">
 
@@ -35,52 +41,186 @@
   </form>
 
   <div class="nav-login-toggle">
-    <button type="button" id="navToRegister">Ikke registrert enna?</button>
-    <button type="button" id="navToLogin" hidden>Allerede registrert?</button>
+    <span id="navToRegister">Ikke registrert enna?</span>
+    <span type="button" id="navToLogin" hidden>Allerede registrert?</span>
+    <span type="button" id="forgottrnPassword" hidden>Glemte passord?</span>
   </div>
-
+<p class="preview-note">
+</p>
   <p id="navAuthMessage" role="status"></p>
+  <details>
+    <summary>Hva er study Buddy</summary>
+    <p>Study Buddy er en mobil app for studenter på NTNU i Gjøvik. Formålet med appen er å hjelpe studenter 
+      finne andre å øve med utenfor vennekretsen. Appen går ut på at du kan lage en session der du
+      oppgir hvilket fag, rom, tid og en liten beskrivelse av hva du skal jobbe med også blir den live og synlig på alle sin mobil. 
+      Fra der så kan man be om å bli med og så snart forespørslet er godtatt så kan man møte opp fysisk og øve sammen.</p>
+  </details>
 </li>
+</div>
+</dialog>
+    <!--<h3>Welcome to the landing page</h3>-->
+    <!--<p class="para">This site is built entirely on Node.js and Node.js backend.
+        Node is a JavaScript platform typically used to run JavaScript on servers.<p>
+        -->
 
-<!-- Study session form used to arrange a study meeting. -->
-<div class="container">  
-  <form id="contact" action="" method="post">
-    <h3>Study Buddy</h3>
+<main id="mainScreen" hidden>
+<div class="container" id="appFrame">
+
+  <button type="button" class="btn btn-sm" id="clearAll" name="button" hidden>clear all</button>
+  <header>
+    <h2 id="headerTitleWrap">
+    <img id="headerIcon" src="images/homebutton.png" alt="" width="32" height="32">
+    <span id="headerTitle">Home</span>
+    </h2>
+    <img id="headerAvatar" src="images/avatar.png" alt="Profil" width="70" height="70">
+</header>
+  <section id="homesection">
+  <p id="welcomeMessage" role="status"></p>
+
+    <img id="landing" src="images/study_buddy_1.png" style="display: block; margin-inline: auto;">
+</section>
+
+  <div id="activeSessions">
+  </div>
+  <div id="upcomingSessions">
+  </div>
+  <section id="sessionssection" hidden>
+    <h3 class="section-title">Live Sessions</h3>
+
+  <select id="sessionFilter" class="filter-pill">
+    <option value="">Filter: Alle emner</option>
+  </select>
+
+  <p id="sessionNote" role="status"></p>
+  <div id="sessionList"></div>
+
+  <button type="button" id="newSessionBtn">+ New Session</button>
+    <form id="contact" hidden>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
-      <input placeholder="Vertsnavn" type="text" tabindex="1" required autofocus>
+      <input id="session-titel" name="tittel" placeholder="Tittel på studieøkten" type="text" maxlength="100" required autofocus>
+    </fieldset>
+    <fieldset class="session-row">
+      <div>
+        <label for="session-start">Starttid</label>
+        <input id="session-start" name="starttid" type="time" required>
+      </div>
+      <div>
+        <label for="session-end">Sluttid</label>
+        <input id="session-end" name="sluttid" type="time" required>
+      </div>
+      <div>
+        <label for="session-capacity">Maks deltakere</label>
+        <input id="session-capacity" name="maks_deltakere" type="number" min="1" value="3" required>
+      </div>
     </fieldset>
     <fieldset>
-      <input placeholder="E-postadresse" type="email" tabindex="2" required>
+      <label for="session-date">Dato</label>
+      <input id="session-date" name="dato" type="date" required>
     </fieldset>
-       <fieldset>
-      <input placeholder="date" type="date" tabindex="2" required>
-    </fieldset>
-<fieldset>
-    <select name="course-code" multiple = "multiple">
+    <fieldset>
+      <select id="course-code-num" name="course-code" required>
         <option value="" disabled selected>Emne kode og kurs navn</option>
-        <option value="IDG2052">IDG2052 Programmering</option>
-        <option value="IDATG2208">IDATG2208 Machine Learning</option>
-        <option value="IDATG2102">IDATG2102 Alogrithmic Methods</option>
-       
-    </select>
-</fieldset>
+      </select>
+    </fieldset>
     <fieldset>
-                 <textarea placeholder="Skriv gruppesesjonsbeskrivelsen her..." tabindex="5" required></textarea>
+      <select id="bygningNo" class="bygning" placeholder="Bygning">
+        <option value="" disabled selected>Bygning</option>
+        <option>A</option>
+        <option>G</option>
+        <option>K</option>
+        <option>H</option>
+        <option>S</option>
+        <option>B</option>
+        <option>T</option>
+      </select>
+    </fieldset>
+    <fieldset>
+      <input id="roomNo" placeholder="Rom" type="text" maxlength="10">
     </fieldset>
     <fieldset>
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
     </fieldset>
+    <p id="session-message" role="status"></p>
+    <div id="session-list"></div>
+    </form>
+  </section>
+  <section id="settingssection" hidden>
+    <form id="kursansvarlig" hidden>
+    <h4>Opprett nytt emne (admin)</h4>
+    <input name="emnekode" placeholder="Emnekode, f.eks. IDATG2102" type="text" maxlength="20" required>
+    <input name="navn_no" placeholder="Kursnavn (norsk)" type="text" maxlength="100" required>
+    <input name="navn_en" placeholder="Course title (English)" type="text" maxlength="100">
+    <textarea name="beskrivelse_no" placeholder="Beskrivelse (norsk)" rows="3"></textarea>
+    <textarea name="beskrivelse_en" placeholder="Description (English)" rows="3"></textarea>
+    <button type="submit">Opprett emne</button>
+    <p id="course-message" role="status"></p>
   </form>
- 
-  
+  </section>
+  <nav>
+    <button data-target="homesection" data-title="Home">
+      <img src="images/homebutton.png" alt="Home" width="48" height="48">
+    </button>
+    <button data-target="sessionssection" data-title="Sessions">
+      <img src="images/sessionslogov2.png" alt="Sessions" width="48" height="48">
+    </button>
+    <button data-target="settingssection" data-title="Settings">
+      <img src="images/settingslogo.png" alt="Settings" width="48" height="48">
+    </button>
+  </nav>
 </div>
 
+
+<!--
+<form id="userForm">
+    <label>
+        Navn
+        <input type="text" id="name" required>
+    </label>
+
+    <label>
+        Email
+        <input type="email" id="email" required>
+    </label>
+
+    <label>
+        Role
+        <select id="role">
+            <option value="Member">Medlem</option>
+            <option value="Host">Vert</option>-->
+            <!--<option value="Member">Member</option>-->
+            <!--<option value="Host">Host</option>-->
+     <!--    </select>
+    </label>
+
+    <button type="submit">Lage Bruker</button> -->
+    <!--<button type="submit">Make User</button>-->
+
+
+</form>
+<p id="message"></p>
+
+
+<!-- Session Card-->
+
+<div id="sessionCard"></div>
+
+
+
+</div>
+ 
+<!--<div class="container">
+      <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
+    <img id="node" src="images/node-icon.png" alt="JS icon">
+    <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
+        Node er en JavaScript-plattform som vanligvis brukes til å kjøre JavaScript på servere.<p>
+</div>-->
+</main>
   
 
 </body>
-<!-- Load the frontend scripts that power the interaction logic. -->
-<script src="js/app.js"></script>
+
 <script src="js/script.js"></script>
+<script src="js/crud.js"></script>
 
 </html>
