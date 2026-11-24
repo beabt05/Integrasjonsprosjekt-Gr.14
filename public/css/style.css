@@ -115,9 +115,9 @@ header {
 #headerAvatar {
   grid-column: 3;
   justify-self: end;
-  width: 38px;
-  height: 38px;
-  border: 2px solid var(--accent-soft);
+  width: 70px;
+  height: 70px;
+  border: 1px solid var(--accent-soft);
   border-radius: 50%;
   object-fit: cover;
 }

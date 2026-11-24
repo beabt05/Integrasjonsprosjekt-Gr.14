@@ -1,6 +1,7 @@
 const crypto = require('crypto')
 const db = require('../config/db')
 const {createSession} = require('../utils/authSession')
+const emailRegex = /^[a-z0-9._%+-]+@(?:[a-z0-9-]+\.)*ntnu\.no$/i
 
 // Register a new student account by validating the input, hashing the password,
 // and inserting the user record into the database with a unique username.
@@ -27,6 +28,15 @@ function register(req, res) {
         res.writeHead(400, {'Content-Type': 'application/json'})
         res.end(JSON.stringify({message: 'Epost og passord må fylles ut'}))
         return
+      }
+
+
+      if (!emailRegex.test(email.trim())) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+              message: 'Du må bruke en gyldig NTNU e-postadresse.'
+          }));
+          return;
       }
 
       // Generate a new random salt for each user to protect the password hash.
