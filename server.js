@@ -7,7 +7,7 @@ const sessionsController = require('./src/controllers/sessions.controller')
 const fs = require('fs')
 const crypto = require('crypto')
 const { resourceUsage } = require('process')
-
+const participationController = require('./src/controllers/participation.controller')
 
 // Create the main HTTP server. It handles API requests and serves static files from the public directory.
 const server = http.createServer((req, res) => {
@@ -36,14 +36,28 @@ const server = http.createServer((req, res) => {
 }
 
   // Handle the sessions endpoint
-  if (req.method === 'GET' && req.url === '/api/sessions') {
-  sessionsController.getSessions(req, res)
+  const { pathname } = new URL(req.url, 'http://localhost')
+
+  if (req.method === 'GET' && pathname === '/api/sessions') {
+    sessionsController.getSessions(req, res)
+  return
+  }
+  if (req.method === 'POST' && pathname === '/api/sessions/join') {
+    participationController.joinSession(req, res)
+  return
+  }
+  if (req.method === 'GET' && pathname === '/api/requests') {
+  participationController.getRequests(req, res)
+  return
+  }
+  if (req.method === 'POST' && pathname === '/api/requests/respond') {
+    participationController.respondToRequest(req, res)
   return
   }
 
   if (req.method === 'POST' && req.url === '/api/sessions') {
     sessionsController.createSessions(req,res)
-    return
+  return
   }
 
   // Resolve the requested file path inside the public folder; the root URL serves the landing page.

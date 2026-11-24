@@ -1,32 +1,34 @@
 const database = require('../config/db')
 
-function getSessions(req, res){
-    database.query(
-        `SELECT s.id,
-                s.tittel,
-                e.emnekode,
-                st.brukernavn AS host,
-                CONCAT_WS(' ', s.bygning, s.rom) AS rom,
-                DATE_FORMAT(s.dato, '%Y-%m-%d') AS dato,
-                TIME_FORMAT(s.starttid, '%H:%i') AS starttid,
-                TIME_FORMAT(s.sluttid, '%H:%i') AS sluttid,
-                s.maks_deltakere,
-                s.maks_deltakere - (SELECT COUNT(*) FROM deltakere d WHERE d.okt_id = s.id) AS ledigePlasser
-         FROM studieokter s
-         JOIN emner e ON e.id = s.emne_id
-         JOIN studenter st ON st.id = s.opprettet_av
-         ORDER BY s.dato, s.starttid`,
-        (err, rows) => {
-            if (err) {
-                console.error(err)
-                res.writeHead(500, {'Content-Type': 'application/json'})
-                res.end(JSON.stringify({message: 'Noe gikk galt.'}))
-                return
-            }
-            res.writeHead(200, {'Content-Type': 'application/json'})
-            res.end(JSON.stringify(rows))
-        }
-    )
+function getSessions(req, res) {
+  const userId = Number(new URL(req.url, 'http://localhost').searchParams.get('userId')) || 0
+
+  database.query(
+    `SELECT s.id, s.tittel, s.opprettet_av, TIMESTAMP(s.dato, s.sluttid) < NOW() AS avsluttet, e.emnekode, st.brukernavn AS host,
+            CONCAT_WS(' ', s.bygning, s.rom) AS rom,
+            DATE_FORMAT(s.dato, '%Y-%m-%d') AS dato,
+            TIME_FORMAT(s.starttid, '%H:%i') AS starttid,
+            TIME_FORMAT(s.sluttid, '%H:%i') AS sluttid,
+            s.maks_deltakere,
+            s.maks_deltakere - (SELECT COUNT(*) FROM deltakere d
+                                WHERE d.okt_id = s.id AND d.status = 'godkjent') AS ledigePlasser,
+            (SELECT d.status FROM deltakere d
+              WHERE d.okt_id = s.id AND d.student_id = ?) AS minStatus
+     FROM studieokter s
+     JOIN emner e ON e.id = s.emne_id
+     JOIN studenter st ON st.id = s.opprettet_av
+     ORDER BY s.dato, s.starttid`,
+    [userId],
+    (err, rows) => {
+      if (err) {
+        console.error(err)
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' })
+        return res.end(JSON.stringify({ message: 'Kunne ikke hente økter.' }))
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
+      res.end(JSON.stringify(rows))
+    }
+  )
 }
 
 function createSessions(req,res){

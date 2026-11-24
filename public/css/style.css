@@ -467,3 +467,36 @@ text-align:center;
   color: #b91c1c;
   border-color: #fecaca;
 }
+
+.session-join {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.join-status { font-size: 0.875rem; font-weight: 600; }
+
+.join-btn {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: var(--accent, #EB5757);
+  color: #fff;
+  font-size: 0.875rem;
+}
+.join-btn.secondary { background: #888; }
+.join-btn:disabled { opacity: 0.5; cursor: default; }
+
+#requestsBox {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin: 0 12px 12px;
+}
+
+#requestsBox h4 { font-size: 14px; margin-bottom: 6px; }
+.request-row { padding: 8px 0; border-top: 1px solid #eee; }
+.request-row:first-of-type { border-top: none; }
+.request-actions { display: flex; gap: 8px; margin-top: 6px; }

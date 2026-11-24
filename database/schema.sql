@@ -56,6 +56,7 @@ CREATE TABLE deltakere (
   okt_id      INT NOT NULL,
   student_id  INT NOT NULL,
   ble_med     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('venter','godkjent','avslatt') NOT NULL DEFAULT 'venter',
   PRIMARY KEY (okt_id, student_id), 
   FOREIGN KEY (okt_id) REFERENCES studieokter(id) ON DELETE CASCADE,
   FOREIGN KEY (student_id) REFERENCES studenter(id) ON DELETE CASCADE

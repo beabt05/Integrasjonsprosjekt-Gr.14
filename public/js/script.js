@@ -17,6 +17,8 @@ const sessionNote = document.getElementById('sessionNote');
 const courseSelect = document.getElementById('course-code-num')
 const courseForm = document.getElementById('kursansvarlig');
 const courseMessage = document.getElementById('course-message');
+const requestsBox = document.getElementById('requestsBox');
+const requestList = document.getElementById('requestList');
 
 usernameInput.hidden = true;
 usernameInput.disabled = true;
@@ -136,68 +138,6 @@ const MOCK_SESSIONS = [
 let allSessions = [];
 let createdSessions = [];   // sessions made with the form (crud.js adds to this)
 
-// One column of a card: first line bold, rest normal
-function cell(...lines) {
-  const div = document.createElement('div');
-  div.className = 'session-cell';
-  lines.forEach((text, i) => {
-    if (!text) return;
-    const p = document.createElement('p');
-    p.textContent = text;            // textContent, never innerHTML
-    if (i === 0) p.className = 'session-strong';
-    div.appendChild(p);
-  });
-  return div;
-}
-
-function renderSession(s) {
-  const card = document.createElement('article');
-  card.className = 'session-card';
-  card.tabIndex = 0;
-
-  const row = document.createElement('div');
-  row.className = 'session-row-cols';
-  row.append(
-    cell(s.host, s.emnekode),
-    cell(s.tittel, s.beskrivelse),
-    cell(`${s.starttid}-${s.sluttid}`, `${s.ledigePlasser} ledige plasser`)
-  );
-
-  // Extra info, shown when the card is clicked
-  const more = document.createElement('div');
-  more.className = 'session-more';
-  more.hidden = true;
-  more.append(cell(`Rom: ${s.rom || 'ikke oppgitt'}`, `Dato: ${s.dato || ''}`));
-
-  // Edit/remove only for sessions created with the form
-  if (createdSessions.includes(s)) {
-    const actions = document.createElement('div');
-    actions.className = 'session-actions';
-    ['edit', 'remove'].forEach(kind => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = kind;
-      b.textContent = kind;
-      b.addEventListener('click', e => {
-        e.stopPropagation();         // don't toggle the card
-        if (kind === 'edit') startEdit(s);      // defined in crud.js
-        else removeSession(s);                  // defined in crud.js
-      });
-      actions.appendChild(b);
-    });
-    more.appendChild(actions);
-  }
-
-  const toggle = () => { more.hidden = !more.hidden; };
-  card.addEventListener('click', toggle);
-  card.addEventListener('keydown', e => {
-    if (e.key === 'Enter') toggle();
-  });
-
-  card.append(row, more);
-  return card;
-}
-
 function fillFilter() {
   const current = sessionFilter.value;
   const codes = [...new Set(allSessions.map(s => s.emnekode))];
@@ -212,18 +152,18 @@ function fillFilter() {
 }
 
 async function fillCourses() {
-  let list;
+  let list = [];
   try {
     const res = await fetch('/api/courses');
     if (!res.ok) throw new Error('bad response');
     list = await res.json();
   } catch {
-    list = [];
+    /* leave the list empty */
   }
 
   courseSelect.length = 1;
   list.forEach(c => {
-    const opt = document.createElement('option')
+    const opt = document.createElement('option');
     opt.value = c.emnekode;
     opt.textContent = `${c.emnekode} ${c.navn_no}`;
     courseSelect.appendChild(opt);
@@ -245,13 +185,105 @@ function showSessions() {
   shown.forEach(s => sessionList.appendChild(renderSession(s)));
 }
 
+// One column of a card: first line bold, rest normal
+function cell(...lines) {
+  const div = document.createElement('div');
+  div.className = 'session-cell';
+  lines.forEach((text, i) => {
+    if (!text) return;
+    const p = document.createElement('p');
+    p.textContent = text;            // textContent, never innerHTML
+    if (i === 0) p.className = 'session-strong';
+    div.appendChild(p);
+  });
+  return div;
+}
+
+const myId = () => Number(localStorage.getItem('userId')) || 0;
+
+function renderSession(s) {
+  const card = document.createElement('article');
+  card.className = 'session-card';
+  card.tabIndex = 0;
+
+  const row = document.createElement('div');
+  row.className = 'session-row-cols';
+  row.append(
+    cell(s.host, s.emnekode),
+    cell(s.tittel, s.beskrivelse),
+    cell(s.starttid, `${s.ledigePlasser} ledige plasser`)
+  );
+
+  const more = document.createElement('div');
+  more.className = 'session-more';
+  more.hidden = true;
+  more.append(cell(`Rom: ${s.rom || 'ikke oppgitt'}`, `Dato: ${s.dato || ''}`));
+
+  // Join area: always visible, doesn't toggle the card
+  const join = document.createElement('div');
+  join.className = 'session-join';
+  join.addEventListener('click', e => e.stopPropagation());
+
+  const label = text => {
+    const span = document.createElement('span');
+    span.className = 'join-status';
+    span.textContent = text;
+    join.appendChild(span);
+  };
+
+  if (s.opprettet_av === myId()) {
+    label('Din økt');
+  } else if (s.minStatus === 'godkjent') {
+    label('✓ Du er med');
+  } else if (s.minStatus === 'venter') {
+    label('Forespørsel sendt …');
+  } else if (s.minStatus === 'avslatt') {
+    label('Forespørselen ble avslått');
+  } else if (s.avsluttet) {
+    label('Avsluttet');
+  } else if (s.ledigePlasser <= 0) {
+    label('Full');
+  } else {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'join-btn';
+    btn.textContent = 'Be om å bli med';
+    btn.addEventListener('click', () => requestJoin(s, btn));
+    join.appendChild(btn);
+  }
+
+  const toggle = () => { more.hidden = !more.hidden; };
+  card.addEventListener('click', toggle);
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.target === card) toggle();
+  });
+
+  card.append(row, more, join);
+  return card;
+}
+
+async function requestJoin(s, btn) {
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/sessions/join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: s.id, userId: myId() })
+    });
+    const result = await res.json();
+    sessionNote.textContent = result.message;
+  } catch {
+    sessionNote.textContent = 'Kunne ikke koble opp til serveren.';
+  }
+  loadSessions();   // refresh status and free spots
+}
+
 async function loadSessions() {
   let fetched;
   try {
-    const res = await fetch('/api/sessions');
+    const res = await fetch(`/api/sessions?userId=${myId()}`);
     if (!res.ok) throw new Error('bad response');
     fetched = await res.json();
-    sessionNote.textContent = '';
   } catch {
     fetched = MOCK_SESSIONS;
     sessionNote.textContent = 'Viser eksempeldata (fikk ikke kontakt med serveren).';
@@ -259,6 +291,63 @@ async function loadSessions() {
   allSessions = [...createdSessions, ...fetched];
   fillFilter();
   showSessions();
+  loadRequests();
+}
+
+// ---------- Host: incoming join requests ----------
+
+async function loadRequests() {
+  let list = [];
+  try {
+    const res = await fetch(`/api/requests?userId=${myId()}`);
+    if (res.ok) list = await res.json();
+  } catch { /* leave the list empty */ }
+
+  requestList.replaceChildren();
+  requestsBox.hidden = list.length === 0;
+
+  list.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'request-row';
+
+    const text = document.createElement('p');
+    text.textContent = `${r.brukernavn} vil bli med på «${r.tittel}» (${r.emnekode})`;
+
+    const actions = document.createElement('div');
+    actions.className = 'request-actions';
+    [['Godta', 'godkjent'], ['Avslå', 'avslatt']].forEach(([title, action]) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = action === 'godkjent' ? 'join-btn' : 'join-btn secondary';
+      b.textContent = title;
+      b.addEventListener('click', () => respondToRequest(r, action, b));
+      actions.appendChild(b);
+    });
+
+    row.append(text, actions);
+    requestList.appendChild(row);
+  });
+}
+
+async function respondToRequest(r, action, btn) {
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/requests/respond', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: r.sessionId,
+        studentId: r.studentId,
+        userId: myId(),
+        action
+      })
+    });
+    const result = await res.json();
+    sessionNote.textContent = result.message;
+  } catch {
+    sessionNote.textContent = 'Kunne ikke koble opp til serveren.';
+  }
+  loadSessions();   // also reloads the request list
 }
 
 courseForm.addEventListener('submit', async event => {
