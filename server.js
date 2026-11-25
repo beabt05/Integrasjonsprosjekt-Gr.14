@@ -1,359 +1,114 @@
-require('dotenv').config()
+// Import the Node.js built-ins and libraries required for HTTP serving, file handling, crypto hashing and database work.
 const http = require('http')
 const path = require('path')
+const authController = require('./src/controllers/auth.controller')
+const courseController = require('./src/controllers/course.controller')
+const sessionsController = require('./src/controllers/sessions.controller')
 const fs = require('fs')
-const db = require('./db')
 const crypto = require('crypto')
-const { promisify } = require('util');
-const scrypt = promisify(crypto.scrypt);
-
-db.execute('SELECT DATABASE() AS db_name, @@hostname AS db_server')
-  .then(([rows]) => console.log('Connected database:', rows[0]))
-  .catch(console.error);
+const { resourceUsage } = require('process')
+const { getStudentId } = require('./src/utils/authSession')
 
 
-const server = http.createServer(async(req, res) => {  
-  console.log('Incoming request:', req.method, req.url);
+// Create the main HTTP server. It handles API requests and serves static files from the public directory.
+const server = http.createServer((req, res) => {
 
-// course creation code.
+  // Handle the registration endpoint: validate input, hash the password, and save the user record.
+  if (req.method === 'POST' && req.url === '/api/auth/register') {
+    authController.register(req, res)
+    return
+  }
 
-  if (req.method === 'POST' && req.url === '/api/emner') {
-  let body = '';
+  // Handle the login endpoint by delegating authentication to the controller layer.
+  if (req.method === 'POST' && req.url === '/api/auth/login') {
+    authController.login(req, res)
+    return
+  }
 
-  req.on('data', (chunk) => {
-    body += chunk;
-  });
+  // Handle the courses endpoint
+  if (req.method === 'GET' && req.url === '/api/courses') {
+  courseController.getCourses(req, res)
+  return
+  }
 
-  req.on('end', async () => {
-    const sendJson = (status, message) => {
-      res.writeHead(status, {
-        'Content-Type': 'application/json; charset=utf-8'
-      });
-      res.end(JSON.stringify({ message }));
-    };
+  if (req.method === 'POST' && req.url === '/api/courses') {
+  courseController.createCourse(req, res)
+  return
+}
 
-    let kurs;
+  // Handle the sessions endpoint
+  if (req.method === 'GET' && req.url === '/api/sessions') {
+  sessionsController.getSessions(req, res)
+  return
+  }
+  
+  if (req.method === 'POST' && req.url === '/api/sessions') {
+  const sendError = (status, message) => {
+    res.writeHead(status, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ message }))
+  }
 
+  const token = req.headers.cookie?.match(/(?:^|;\s*)sid=([^;]+)/)?.[1]
+  const studentId = getStudentId(token)
+  if (studentId == null) {
+    return sendError(401, 'Du må logge inn først.')
+  }
+
+  let body = ''
+  let bytes = 0
+  req.setEncoding('utf8')
+
+  req.on('data', chunk => {
+    bytes += Buffer.byteLength(chunk)
+    if (bytes <= 16_384) body += chunk
+  })
+
+  req.on('end', () => {
+    if (bytes > 16_384) {
+      return sendError(413, 'Forespørselen er for stor.')
+    }
+
+    let session
     try {
-      kurs = JSON.parse(body);
+      session = JSON.parse(body)
     } catch {
-      return sendJson(400, 'Ugyldig JSON.');
+      return sendError(400, 'Ugyldig JSON.')
     }
 
-    const {
-      emnekode,
-      navn_no,
-      navn_en,
-      beskrivelse_no,
-      beskrivelse_en
-    } = kurs ?? {};
-
+    const required = ['emnekode', 'tittel', 'dato', 'starttid']
+    const capacity = Number(session?.ledigePlasser)
     if (
-      typeof emnekode !== 'string' ||
-      !emnekode.trim() ||
-      typeof navn_no !== 'string' ||
-      !navn_no.trim() ||
-      navn_no.trim().length > 100
-    
+      !session ||
+      required.some(key => typeof session[key] !== 'string' || !session[key].trim()) ||
+      !Number.isSafeInteger(capacity) || capacity < 1
     ) {
-      return sendJson(400, 'Oppgi emnekode og gyldig emnenavn');
+      return sendError(400, 'Fyll inn emne, tittel, dato, starttid og kapasitet.')
     }
 
-    try {
-      await db.execute(
-        `INSERT INTO emner
-          (emnekode, navn_no, navn_en, beskrivelse_no, beskrivelse_en)
-         VALUES (?, ?, ?, ?, ?)`,
-        [
-          emnekode.trim(),
-          navn_no.trim(),
-          typeof navn_en === 'string' ? navn_en.trim() : '',
-          typeof beskrivelse_no === 'string' ? beskrivelse_no.trim() : '',
-          typeof beskrivelse_en === 'string' ? beskrivelse_en.trim() : '',
-          
-        ]
-      );
+    sessionsController.createSession(res, {
+      ...session,
+      ledigePlasser: capacity,
+      sluttid: session.sluttid || null,
+    }, studentId)
+  })
 
-      return sendJson(201, 'Emnet er opprettet.');
-    } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        return sendJson(409, 'Emnekoden finnes allerede.');
-      }
-
-      console.error('Feil ved oppretting av emne:', error);
-      return sendJson(500, 'Kunne ikke opprette emnet.');
-    }
-  });
-
-  return;
+  return
 }
   
-  if (req.method === 'GET' && req.url === '/api/emner') {
-    console.log('GET /api/emner reached');
-    try {
-      const [emner] = await db.execute(
-        'SELECT emnekode FROM emner ORDER BY emnekode'
-      );
-      console.log('Query result:', emner);
-      res.writeHead(200, {
-        'Content-Type': 'application/json; charset=utf-8'
-      });
-      res.end(JSON.stringify(emner));
-    } catch (error) {
-      console.error('Kunne ikke hente emner:', error);
-      res.writeHead(500, {
-        'Content-Type': 'application/json; charset=utf-8'
-      });
-      res.end(JSON.stringify({ message: 'Kunne ikke hente emner.' }));
-    }
-
-    return;
-  }
-
-
-  
-  if (req.method === "POST" && req.url === "/api/studieokter") {
-    let body = "";
-
-    req.on("data", chunk => {
-      body += chunk;
-    });
-
-    req.on("end", async () => {
-      try {
-        const data = new URLSearchParams(body);
-        const studentId = Number(data.get("opprettet_av")); // Replace with your student ID for this local test.
-
-        // Find the course ID using the course code from the form.
-        const courseCode = data.get("emne_id") ?? data.get("courseCode");
-        const [courses] = await db.execute(
-          "SELECT id FROM emner WHERE emnekode = ?",
-          [courseCode]
-        );
-
-        if (!courses.length) {
-          res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message: "Unknown course code" }));
-          return;
-        }
-
-        await db.execute(
-          `INSERT INTO studieokter
-            (emne_id, opprettet_av, tittel, bygning,
-            maks_deltakere, dato, starttid, sluttid)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            courses[0].id,
-            studentId,
-            data.get("tittel") ?? data.get("title"),
-            data.get("bygning") ?? data.get("buildingName"),
-            data.get("maks_deltakere") ?? data.get("capacity"),
-            data.get("dato") ?? data.get("date"),
-            data.get("starttid") ?? data.get("start"),
-            data.get("sluttid") ?? data.get("end")
-          ]
-        );
-
-        res.writeHead(201, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "Studieøkt lagret!" }));
-      } catch (err) {
-        console.error(err);
-        res.writeHead(500, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "Could not save session" }));
-      }
-    });
-
-    return;
-  }
-
-
-  if (req.method == 'POST' && req.url === '/api/auth/register'){   //checks that the form reaches the route
-    let body = '';
-
-    req.on('data', chunk => {
-
-      body += chunk;
-    });
-
-    req.on('end', async () => {
-      try {
-        const { username, email, password } = JSON.parse(body);
-
-        if (
-          typeof username !== 'string' ||
-          typeof password !== 'string' ||
-          typeof email !== 'string' ||
-          !email.trim() ||
-          !username.trim() ||
-          !password
-        ) {
-          res.writeHead(400, {'Content-Type': 'application/json' });
-          res.end(JSON.stringify({
-            message: 'Skriv inn brukernavn og passord.'
-          }));
-          return;
-        }
-         
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-z0-9-]+\.)*ntnu\.no$/i;
-
-        if (!emailRegex.test(email.trim())) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({
-                message: 'Du må bruke en gyldig NTNU e-postadresse.'
-            }));
-            return;
-          }
-
-
-
-          const salt = crypto.randomBytes(16).toString('hex');
-          const derivedKey = await scrypt(password, salt, 64);
-          const passwordHash = salt + ':' + derivedKey.toString('hex');
-          await db.execute(
-            'INSERT INTO studenter (brukernavn, epost, passord) VALUES (?, ?, ?)',
-            [username.trim(), email.trim(), passwordHash]
-          );
-
-          res.writeHead(201, { 'Content-Type': 'application/json'});
-          res.end(JSON.stringify({
-            message:'Bruker opprettet. Nå kan du logge inn.'
-          }));
-
-
-        } catch (err) {
-                  console.error('REGISTRATION ERROR:', err);
-
-                  res.writeHead(500, {
-                      'Content-Type': 'application/json'
-                  });
-
-                  res.end(JSON.stringify({
-                      message: 'Registration failed',
-                      error: err.message
-                  }));
-              }
-       
-        });
-
-        return;
-
-    }
-    //Build file path
-    if (req.method === 'POST' && req.url === '/api/auth/login') {
-        let body = '';
-        req.on('data', chunk => {  //collects data submitted by the form
-          body += chunk;
-        });
-    
-    
-    // Compare the password with the saved hash
-    // Send the welcome message if thy match
-    
-    
-    req.on('end', async () => {  // (wraps the username and reads after all the data arrives)
-      try {
-    const { email, password } = JSON.parse(body);
-    
-
-    if (
-      typeof email !== 'string' ||
-      typeof password !== 'string' ||
-      !email.trim() ||
-      !password
-    ) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        message: 'Skriv inn e-postadresse og passord.'
-      }));
-      return;
-    }
-
-    // Read username and password
-
-    //const [users] = await db.execute(
-    //'SELECT id, brukernavn AS username, passord AS password_hash FROM studenter WHERE epost = ?',
-    //[email]
-    //);;
-
-    const [users] = await db.execute(
-    'SELECT id, brukernavn AS username, passord AS password_hash, rolle AS role FROM studenter WHERE epost = ?',
-    [email]
-  );
-    
-      // Find the user in the database  
-    
-    const user = users[0]; //selects the user returned by the query
-    
-    if (!user) {  //error handling if the user doesn't exist or password is wrong
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        message: 'Feil brukernavn eller passord.'  
-      }));
-      return;
-    }
-
-    const [salt, storedHash] = user.password_hash.split(':');
-    const savedKey = Buffer.from(storedHash, 'hex');
-    const enteredKey = await scrypt(password, salt, 64);
-
-    if (
-      savedKey.length !== enteredKey.length ||  //This rejects incorrect passwords before the welcome response.
-      !crypto.timingSafeEqual(savedKey, enteredKey)
-    ) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        message: 'Feil e-postadresse eller passord.'
-      }));
-      return;
-    }
-
-      res.writeHead(200, {'Content-Type' : 'application/json'});
-      res.end(JSON.stringify({
-        message: `Velkommen, ${user.username}! Du er logget inn!`,
-        userId: user.id,
-        username: user.username,
-        role: user.role
-        
-      }));
-  } catch (err) {
-    console.error('login failed:', err);
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      message: 'Kunne ikke logge inn. Prøv igjen senere.'
-    }));
-  }
-});
-
-return;
-}
-  if (req.method == 'POST' && req.url === '/api/sessions') {
-    let body = '';
-        req.on('data', chunk => {  //collects data submitted by the form
-          body += chunk;
-        });
-    req.on('end', async () => {
-      try{
-        const {emneID, opprettetAv, tittel, bygning, rom, maksDeltakere, dato, starttid, sluttid} = JSON.parse(body)
-      } catch (err) {console.error('Session creation failed: ', err);
-
-      }
-    }) 
-  }
-
+  // Resolve the requested file path inside the public folder; the root URL serves the landing page.
   let filePath = path.join(
     __dirname,
     'public',
     req.url === '/' ? 'index.html' : req.url
   )
 
-  // Extension of file
-
+  // Extract the file extension so the response can advertise the proper MIME type.
   let extname = path.extname(filePath)
 
-  // Iniial content type
+  // Default to HTML unless the file is a script, stylesheet, JSON payload, or image.
   let contentType = 'text/html'
 
-  // Check ext and set content type
+  // Map common file types to their content type so browsers render them correctly.
   switch (extname) {
     case '.js':
       contentType = 'text/javascript'
@@ -372,32 +127,33 @@ return;
       break
   }
 
-  // Use Node's file system module to read the file located at filePath.
-
+  // Read the requested file from disk and serve it back to the client.
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code == 'ENOENT') {
-        // Page not found
+        // If the page or asset does not exist, serve the custom 404 page instead of failing silently.
         fs.readFile(
           path.join(__dirname, 'public', '404.html'),
           (err, content) => {
-            res.writeHead(200, { 'Content-Type': 'text/html' })
+            res.writeHead(404, { 'Content-Type': 'text/html' })
             res.end(content, 'utf8')
           }
         )
       } else {
-        // Some server error
+        // Any other file read error is treated as a server-side issue.
         res.writeHead(500)
         res.end(`Server Error: ${err.code}`)
       }
     } else {
-      // Success
+      // Serve the file with the detected MIME type and UTF-8 encoding for text-based resources.
       res.writeHead(200, { 'Content-Type': contentType })
       res.end(content, 'utf8')
     }
   })
 })
 
+
+// Listen on the configured port or default to 3000 when no environment variable is provided.
 const PORT = process.env.PORT || 3000
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`))

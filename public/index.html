@@ -10,7 +10,6 @@ environment using database/schema.sql and your own .env settings.
 provide the shared Codespaces configuration.
 -->
 
-
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="UTF-8">
@@ -44,27 +43,69 @@ provide the shared Codespaces configuration.
     <span id="navToRegister">Ikke registrert enna?</span>
     <span type="button" id="navToLogin" hidden>Allerede registrert?</span>
     <span type="button" id="forgottrnPassword" hidden>Glemte passord?</span>
-    <p id="navAuthMessage" role="status"></p>
   </div>
-  
+<p class="preview-note">
+</p>
+  <p id="navAuthMessage" role="status"></p>
+  <details>
+    <summary>Hva er study Buddy</summary>
+    <p>Study Buddy er en mobil app for studenter på NTNU i Gjøvik. Formålet med appen er å hjelpe studenter 
+      finne andre å øve med utenfor vennekretsen. Appen går ut på at du kan lage en session der du
+      oppgir hvilket fag, rom, tid og en liten beskrivelse av hva du skal jobbe med også blir den live og synlig på alle sin mobil. 
+      Fra der så kan man be om å bli med og så snart forespørslet er godtatt så kan man møte opp fysisk og øve sammen.</p>
+  </details>
 </li>
 </div>
 </dialog>
-
+    <!--<h3>Welcome to the landing page</h3>-->
+    <!--<p class="para">This site is built entirely on Node.js and Node.js backend.
+        Node is a JavaScript platform typically used to run JavaScript on servers.<p>
+        -->
 
 <main id="mainScreen" hidden>
-  <p id="navAuthMessage" role="status"></p>
-  
+<div class="container" id="appFrame">
 
+  <button type="button" class="btn btn-sm" id="clearAll" name="button" hidden>clear all</button>
+  <header>
+    <h2 id="headerTitleWrap">
+    <img id="headerIcon" src="images/homebutton.png" alt="" width="32" height="32">
+    <span id="headerTitle">Home</span>
+    </h2>
+    <img id="headerAvatar" src="images/avatar.png" alt="Profil" width="70" height="70">
+</header>
+  <section id="homesection">
+  <p id="welcomeMessage" role="status"></p>
+
+    <img id="landing" src="images/study_buddy_1.png" style="display: block; margin-inline: auto;">
+ <!--  <section id="info">
 <div class="container">
-  <section id="home">
-    <header>
-    <img src="images/homebutton.png" alt="" width="40" height="40">
-    <h2>Home</h2>
-    <img id="profilepic" src="images/profilepicturelogo.png" alt="" width="40" height="40"><li id="welcomeMessage"></li>
-  </header></section>
-  <form id="contact">
-    <h1>Study Buddy</h1>
+      <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
+    <img id="node" src="images/node-icon.png" alt="JS icon">
+    <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
+        Node er en JavaScript-plattform som vanligvis brukes til å kjøre JavaScript på servere.<p>
+</div>
+</section>--> 
+</section>
+
+  <div id="activeSessions">
+  </div>
+  <div id="upcomingSessions">
+  </div>
+  <section id="sessionssection" hidden>
+    <h3 class="section-title">Live Sessions</h3>
+
+  <select id="sessionFilter" class="filter-pill">
+    <option value="">Filter: Alle emner</option>
+  </select>
+
+  <p id="sessionNote" role="status"></p>
+  <div id="sessionList"></div>
+  <section>
+  <h2>Mine økter</h2>
+  <ul id="favoriteSessions"></ul>
+ </section>
+  <button type="button" id="newSessionBtn">+ New Session</button>
+    <form id="contact" hidden>
     <h4>Arranger en studieøkt</h4>
     <fieldset>
       <input id="session-titel" name="tittel" placeholder="Tittel på studieøkten" type="text" maxlength="100" required autofocus>
@@ -88,26 +129,47 @@ provide the shared Codespaces configuration.
       <input id="session-date" name="dato" type="date" required>
     </fieldset>
     <fieldset>
-      <select id="course-code" name="courseCode" required>
-       <option value="" disabled selected>Laster emner …</option>
+      <select id="course-code-num" name="course-code" required>
+        <option value="" disabled selected>Emne kode og kurs navn</option>
       </select>
     </fieldset>
     <fieldset>
       <input id="bygningNo" class="bygning" placeholder="Bygning" type="text" maxlength="10">
     </fieldset>
     <fieldset>
-      <input name="rom" placeholder="Rom" type="text" maxlength="10">
+      <input id="roomNo" placeholder="Rom" type="text" maxlength="10">
     </fieldset>
     <fieldset>
       <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
     </fieldset>
     <p id="session-message" role="status"></p>
     <div id="session-list"></div>
+    </form>
+  </section>
+  <section id="settingssection" hidden>
+    <form id="kursansvarlig" hidden>
+    <h4>Opprett nytt emne (admin)</h4>
+    <input name="emnekode" placeholder="Emnekode, f.eks. IDATG2102" type="text" maxlength="20" required>
+    <input name="navn_no" placeholder="Kursnavn (norsk)" type="text" maxlength="100" required>
+    <input name="navn_en" placeholder="Course title (English)" type="text" maxlength="100">
+    <textarea name="beskrivelse_no" placeholder="Beskrivelse (norsk)" rows="3"></textarea>
+    <textarea name="beskrivelse_en" placeholder="Description (English)" rows="3"></textarea>
+    <button type="submit">Opprett emne</button>
+    <p id="course-message" role="status"></p>
   </form>
-
-  <button type="button" class="btn btn-sm" id="clearAll" name="button">clear all</button>
+  </section>
+  <nav>
+    <button data-target="homesection" data-title="Home">
+      <img src="images/homebutton.png" alt="Home" width="48" height="48">
+    </button>
+    <button data-target="sessionssection" data-title="Sessions">
+      <img src="images/sessionslogov2.png" alt="Sessions" width="48" height="48">
+    </button>
+    <button data-target="settingssection" data-title="Settings">
+      <img src="images/settingslogo.png" alt="Settings" width="48" height="48">
+    </button>
+  </nav>
 </div>
-
 
 
 <!--
@@ -139,92 +201,21 @@ provide the shared Codespaces configuration.
 </form>
 <p id="message"></p>
 
-<section id="study-sessions">
-  ...
 
 <!-- Session Card-->
 
 <div id="sessionCard"></div>
 
-</section>
-
-<section id="admin" hidden>
-<div class="container">
-<div id="kurs_preview"></div>
-<form id="kursansvarlig">
-    <h4>Opprette et kurs (ADMIN) (ENGELSK/NORSK)</h4>
-    <fieldset>
-      <input id="kurs_navn" name="navn_no" placeholder="Tittel på kurs" type="text" maxlength="100" required autofocus>
-      <input type="hidden" id="kurs_navn_en" name="navn_en" value="Name of the class">
-    </fieldset>
-      <fieldset>
-      <select id="course-code-num" name="emne-kode" required> 
-        <option value="IDG2052">IDG2052</option>
-        <option value="IDATG2208">IDATG2208</option>
-        <option value="IDATG2102">IDATG2102</option>
-        <option value="IDG1292">IDG1292</option>
-      </select>
-
-      <label for="beskrivelse">Beskrivelse (norsk)</label>
-      <textarea
-        id="beskrivelse_no"
-        name="beskrivelse_no"
-        rows="4"
-        placeholder="Beskriv kort hva kurset omfatter."
-      ></textarea>
-
-       <label for="beskrivelse">Description (english)</label>
-      <textarea
-        id="beskrivelse_en"
-        name="beskrivelse_en"
-        rows="4"
-        placeholder="Describe what the course is about"
-      ></textarea>
-    
-      <p>Maks deltakere: 12</p>
 
 
-
-      <button name="submit" type="submit" id="contact-submit" data-submit="...Sending">send inn</button>
-    </fieldset>
-
-  </form>
-
-</section>
-</div>     <p id="session-message" role="status"></p>
-    <div id="session-list"></div>
-
-<section id="settings"></section>
+</div>
  
-
-<section id="info">
-<div class="container">
+<!--<div class="container">
       <img id="node2" src="images/node2.png" alt="Node JS" width="140%">
     <img id="node" src="images/node-icon.png" alt="JS icon">
     <p class="para">Dette nettstedet er bygget utelukkende på Node.js og Node.js backend. 
         Node er en JavaScript-plattform som vanligvis brukes til å kjøre JavaScript på servere.<p>
-</div>
-</section>
-<!--
- <nav>
-    <button data-target="homesection">
-      <img src="images/homebutton.png" alt="Home" width="48" height="48">
-    </button>
-    <button data-target="sessionssection">
-      <img src="images/sessionslogov2.png" alt="Sessions" width="48" height="48">
-    </button>
-    <button data-target="settingssection">
-      <img src="images/settingslogo.png" alt="Settings" width="48" height="48">
-    </button>
-  </nav>
--->
-   <nav>
-      <a href="#home"><img src="images/homebutton.png" alt="Home" width="48" height="48"></a>
-      <a href="#study-sessions"><img src="images/sessionslogov2.png" alt="Sessions" width="48" height="48"></a>
-      <a href="#settings"><img src="images/settingslogo.png" alt="Settings" width="48" height="48"></a>
-      <a href="#" class="btn btn-link text-danger" id="logoutLink"width="48" height="48">Logout</a>
-  </nav>
-
+</div>-->
 </main>
   
 

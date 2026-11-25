@@ -17,11 +17,11 @@ form.addEventListener("submit", function(event){
         message.textContent = "Please enter a valid name.";
         return;
     }
-
+    
       if (!emailRegex.test(email)) {
         message.textContent = "Please enter a valid ntnu email.";
         return;
-    }
+    }  
 
     // Package the data for the server as a single user object.
     const user = {
@@ -31,37 +31,14 @@ form.addEventListener("submit", function(event){
         role: role
     };
 
-
     // Send the registration data to the backend endpoint for processing.
-    fetch("/api/auth/register", {
+    fetch("/register", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({ username: name, email: email, password: password })
+        body: new URLSearchParams({ name: name, email: email, password: password })
     })
 
-    
-    .then(response => response.json())
-    .then(data => {
-        message.textContent = data.message;
-    })
-
-    .catch(error => {
-        console.error("registration error:", error)
-    })
-
-
-
-    
-
-    
-
+    .then(response => response.text())
+        .then(text => {
+            // The response can be used to show a success or error message to the user.
+        })
  });
-
-
-
-
-
-

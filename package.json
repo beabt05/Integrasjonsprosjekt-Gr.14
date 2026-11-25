@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "db-admin": "socat TCP-LISTEN:8080,fork,reuseaddr TCP:phpmyadmin:80"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -19,9 +18,8 @@
   "homepage": "https://github.com/beabt05/Integrasjonsprosjekt-Gr.14#readme",
   "description": "",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "dotenv": "^18.0.5",
+    "dotenv": "^18.0.0",
     "express": "^5.2.1",
-    "mysql2": "^3.24.5"
+    "mysql2": "^3.24.4"
   }
 }
